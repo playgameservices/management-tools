@@ -1,4 +1,4 @@
-== The Play Games Hide-O-matic!
+## The Play Games Hide-O-matic!
 
 This utility will allow you to hide and and unhide players from public
 leaderboards on Google Play Games.
@@ -13,7 +13,7 @@ More information at:
 
 https://developers.google.com/games/services/management/api/index
 
-== Setup and usage
+## Setup and usage
 
 Open index.html in your browser and follow the directions.  
 
