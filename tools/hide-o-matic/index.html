@@ -16,7 +16,8 @@
 <head>
   <link rel="stylesheet"
         type="text/css"
-        href="http://wolffexperiments.appspot.com/static/codelab/style.css">
+        href="style.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <style type="text/css">
     table.gridtable {
       font-family: verdana,arial,sans-serif;
@@ -72,10 +73,17 @@
       <p>
         <button
            type="submit"
-           onClick="showHighScoreList()">Refresh high scores
+           onClick="showHighScoreList(null)">Refresh high scores
         </button>
       </p>
-      <div id="tableDiv"></div>
+      <div id="highScoreListDiv"></div>
+      <p>
+        <button
+           type="submit"
+           onClick="showHiddenPlayers(null)">Refresh hidden players
+        </button>
+      </p>
+      <div id="hiddenPlayersDiv"></div>
     </div>
     <br/>
     <br/>
@@ -135,10 +143,9 @@
         Mobile caches may take several hours to refresh.</li>
       <li>Unhiding is very slow, and can take as long as 12 hours.
         Please unhide with caution.</li>
-      <li>If you hide someone, you will have no way of retrieving their
-        ID again---once hidden, forever lost.  <code><b>Keep a log of people
-            you hide</b> in case you change your mind.</code></li>
     </ul>
+
+    <div id='errorDiv'></div>
 </div>
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->

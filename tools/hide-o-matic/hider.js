@@ -28,42 +28,36 @@ var unitsReady = 0;
  *  the actual signin button.
  */
 function signinCallback(authResult) {
-  if (authResult['access_token']) {
-    // Successfully authorized
-    // Hide the sign-in button now that the user is authorized, for example:
-    document.getElementById('signinButton')
-      .setAttribute('style', 'display: none');
-    // One of the async actions have happened
-    unitsReady++;
-    checkAllUnitsLoaded();
-  } else if (authResult['error']) {
-    // There was an error.
-    // Possible error codes:
-    //   "access_denied" - User denied access to your app
-    //   "immediate_failed" - Could not automatically log in the user
-    console.log('There was an error: ' + authResult['error']);
+    if (authResult['access_token']) {
+        // Successfully authorized
+        // Hide the sign-in button now that the user is authorized, for example:
+        document.getElementById('signinButton')
+            .setAttribute('style', 'display: none');
+        // One of the async actions have happened
+        unitsReady++;
+        checkAllUnitsLoaded();
+    } else if (authResult['error']) {
+        // There was an error.
+        // Possible error codes:
+        //   "access_denied" - User denied access to your app
+        //   "immediate_failed" - Could not automatically log in the user
+        console.log('There was an error: ' + authResult['error']);
 
-    document.getElementById('signinButton')
-      .setAttribute('style', 'display: visible');
-    document.getElementById('loggedInUI')
-      .setAttribute('style', 'display: none');
+        document.getElementById('signinButton')
+            .setAttribute('style', 'display: visible');
+        document.getElementById('loggedInUI')
+            .setAttribute('style', 'display: none');
   }
 }
 
-/** Load the current top 25 high scores and render them. */
-function showHighScoreList() {
-  var div = document.getElementById('tableDiv').innerHTML = '';
+/** Creates list of players and, if available, scores
+ * @param {Object} root the element you want to append this to.
+ * @param {Array} items the list of players to show.
+ * @param {boolean} showScore should I show the score column?*/
 
-  // Create the request.
-  var request = gapi.client.games.scores.list(
-    {leaderboardId: LEADERBOARD_ID,
-     collection: 'PUBLIC',
-     timeSpan: 'ALL_TIME',
-     maxResults: '25'});
+var createPlayerList = function(root, items, showScore) {
 
-  request.execute(function(response) {
-    console.log('Leaderboard', response);
-    var root = document.getElementById('tableDiv');
+    console.log('Show players');
     var tab = document.createElement('table');
     tab.className = 'gridtable';
     var row, cell;
@@ -72,8 +66,8 @@ function showHighScoreList() {
     row = document.createElement('tr');
     cell = document.createElement('th');
     cell.appendChild(document.createTextNode(
-                         'High score list, total scores on list are: ' +
-                             response.result.numScores));
+                         'Total players on this page: ' +
+                             items.length));
     row.appendChild(cell);
     tab.appendChild(row);
 
@@ -93,56 +87,152 @@ function showHighScoreList() {
     cell = document.createElement('th');
     row.appendChild(cell);
 
-    cell = document.createElement('th');
-    cell.appendChild(document.createTextNode('SCORE'));
-    row.appendChild(cell);
+    if (showScore) {
+        cell = document.createElement('th');
+        cell.appendChild(document.createTextNode('SCORE'));
+        row.appendChild(cell);
+    }
 
     tab.appendChild(row);
 
     // Now actually parse the data.
-    for (var index in response.result.items) {
-      item = response.result.items[index];
-      row = document.createElement('tr');
+    for (var index in items) {
+        item = items[index];
+        row = document.createElement('tr');
 
-      console.log('Name: ' + item.player.displayName +
-                  ', playerId:' + item.player.playerId +
-                  ' ' + item.scoreValue);
-      cell = document.createElement('td');
-      cell.appendChild(document.createTextNode(item.player.displayName));
-      row.appendChild(cell);
+        console.log('Name: ' + item.player.displayName +
+                    ', playerId:' + item.player.playerId +
+                    ' ' + item.scoreValue);
+        cell = document.createElement('td');
+        cell.appendChild(document.createTextNode(item.player.displayName));
+        row.appendChild(cell);
 
-      cell = document.createElement('td');
+        cell = document.createElement('td');
 
-      var img = document.createElement('img');
-      img.setAttribute('src', item.player.avatarImageUrl + '?sz=50');
-      img.setAttribute('height', '50px');
-      img.setAttribute('width', '50px');
-      cell.appendChild(img);
-      row.appendChild(cell);
+        var img = document.createElement('img');
+        img.setAttribute('src', item.player.avatarImageUrl + '?sz=50');
+        img.setAttribute('height', '50px');
+        img.setAttribute('width', '50px');
+        cell.appendChild(img);
+        row.appendChild(cell);
 
-      cell = document.createElement('td');
-      cell.appendChild(document.createTextNode(item.player.playerId));
-      row.appendChild(cell);
+        cell = document.createElement('td');
+        cell.appendChild(document.createTextNode(item.player.playerId));
+        row.appendChild(cell);
 
-      // Need an active button
-      cell = document.createElement('td');
-      var button = document.createElement('button');
-      button.setAttribute('type', 'button');
-      button.setAttribute('name', 'edit');
-      button.setAttribute('value', item.player.playerId);
-      button.appendChild(document.createTextNode('Pick me!'));
-      button.addEventListener('click', sendPlayerDataToInputs, false);
-      cell.appendChild(button);
-      row.appendChild(cell);
+        // Need an active button
+        cell = document.createElement('td');
+        var button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('name', 'edit');
+        button.setAttribute('value', item.player.playerId);
+        button.appendChild(document.createTextNode('Pick me!'));
+        button.addEventListener('click', sendPlayerDataToInputs, false);
+        cell.appendChild(button);
+        row.appendChild(cell);
 
-      cell = document.createElement('td');
-      cell.appendChild(document.createTextNode(item.scoreValue));
-      row.appendChild(cell);
+        if (showScore) {
+            cell = document.createElement('td');
+            cell.appendChild(document.createTextNode(item.scoreValue));
+            row.appendChild(cell);
+        }
 
-      tab.appendChild(row);
+        tab.appendChild(row);
     }
     root.appendChild(tab);
-  });
+};
+
+function createPageButton(text, handler) {
+    var button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.setAttribute('name', 'edit');
+    button.setAttribute('value', item.player.playerId);
+    button.appendChild(document.createTextNode(text));
+    button.addEventListener('click', handler, false);
+
+    return button;
+}
+
+/** Load the current top 25 high scores and render them.
+ * @param {String} pageToken a REST API paging token string, or null. */
+function showHighScoreList(pageToken) {
+    $('#highScoreListDiv').html('');
+    $('#highScoreListDiv').show('fast');
+
+    // Create the request.
+    var request = gapi.client.games.scores.list(
+        {leaderboardId: LEADERBOARD_ID,
+         collection: 'PUBLIC',
+         timeSpan: 'all_time',
+         pageToken: pageToken,
+         maxResults: '10'});
+
+    request.execute(
+        function(response) {
+            console.log('High score', response);
+            if (response.error) {
+                alert('Error ' + response.error.code + ': ' + response.message);
+                return;
+            }
+
+            var root = document.getElementById('highScoreListDiv');
+            createPlayerList(root, response.items, true);
+
+            if (response.prevPageToken) {
+                root.appendChild(
+                    createPageButton(
+                        'Prev',
+                        function(event) {
+                            showHighScoreList(response.prevPageToken);}));
+            }
+            if (response.nextPageToken) {
+                root.appendChild(
+                    createPageButton(
+                        'Next',
+                        function(event) {
+                            showHighScoreList(response.nextPageToken);}));
+            }
+        });
+}
+
+/** Load the current hidden players and render them.
+ * @param {String} pageToken a REST API paging token string, or null.
+ */
+function showHiddenPlayers(pageToken) {
+    $('#hiddenPlayersDiv').html('');
+    $('#hiddenPlayersDiv').show('fast');
+
+    // Create the request.
+    var request = gapi.client.gamesManagement.applications.listHidden(
+        {applicationId: APP_ID,
+         pageToken: pageToken,
+         maxResults: '10'});
+
+    request.execute(
+        function(response) {
+            console.log('Hidden', response);
+            var root = document.getElementById('hiddenPlayersDiv');
+            if (response.items) {
+                createPlayerList(root, response.items, true);
+            } else {
+                createPlayerList(root, [], true);
+            }
+
+            if (response.prevPageToken) {
+                root.appendChild(
+                    createPageButton(
+                        'Prev',
+                        function(event) {
+                            showHiddenPlayers(response.prevPageToken);}));
+            }
+            if (response.nextPageToken) {
+                root.appendChild(
+                    createPageButton(
+                        'Next',
+                        function(event) {
+                            showHiddenPlayers(response.nextPageToken);}));
+            }
+        });
 }
 
 /** Responds to "Pick me!"
@@ -231,16 +321,23 @@ var onLoadCallback = function() {
 };
 
 var continueLoadingLibraries = function() {
-  gapi.client.load('games', 'v1', function(response) {
-    console.log('Games loaded.');
-    unitsReady++;
-    checkAllUnitsLoaded();
-  });
+    div = document.getElementById('errorDiv');
 
-  gapi.client.load('gamesManagement', 'v1management', function(response) {
-    console.log('Management loaded');
-    unitsReady++;
-    checkAllUnitsLoaded();
-  });
+    if (APP_ID == 'APP_ID') {
+        div.innerHTML = '<h3>Warning:  You have not yet set the APP_ID!</h3>';
+    } else {
+        div.innerHTML = '';
+    }
+
+    gapi.client.load('games', 'v1', function(response) {
+                         console.log('Games loaded.');
+                         unitsReady++;
+                         checkAllUnitsLoaded();
+                     });
+
+    gapi.client.load('gamesManagement', 'v1management', function(response) {
+                         console.log('Management loaded');
+                         unitsReady++;
+                         checkAllUnitsLoaded();
+                     });
 };
-
