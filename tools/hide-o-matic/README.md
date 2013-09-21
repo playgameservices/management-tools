@@ -27,7 +27,4 @@ account with owner permissions).
 
    * Hide or unhide players by playerId.
 
-Warning:  If you hide a player, you will not be able to retrieve their
-player ID again, so keep a log of who you hide.
-
 Last edited: 2013/9/13
