@@ -1,0 +1,270 @@
+body {
+  line-height: 1;
+}
+/*ol, ul {
+  list-style: none;
+}*/
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* @end */
+
+#supercontainer {
+margin-left: auto;
+margin-right: auto;
+margin-top:10px;
+width: 930px;
+}
+
+#supercontainer2 {
+margin-left: auto;
+margin-right: auto;
+margin-top:10px;
+padding-bottom: 400px;
+width: 930px;
+background:url("codelab-logo.png") no-repeat right 10px
+}
+
+
+body {
+background: #FFFFFF; /* Old browsers */
+
+
+/*  background: #b8d9fa url(../images/pattern_136.gif) repeat; */
+/*  background: #3b52a4; url(../images/stripe.png) repeat-x;*/
+  color: #111;
+  font: 15px/22px 'Open Sans', Droid Sans, Arial, sans-serif;
+}
+
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+#container {
+  margin: 10px 10px 2em;
+  width: 600px;
+}
+
+header.primary {
+  text-align: center;
+  width: 850px;
+  height: 100px;
+  margin-left:0px;
+  font-family: 'Rosario', sans-serif;
+  font-size:24px;
+  background-color:#EFF;
+}
+
+header.primary h1
+{
+    line-height:50px;
+}
+
+header.primary h3
+{
+    line-height:0px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* @group Nav */
+
+nav.primary {
+  text-align: center;
+  align:center;
+  padding: 12px 0 18px;
+  margin: 12px 0;
+  background-color: #EFF;
+}
+
+nav.primary ul {
+  text-align: center;
+  margin: 0 0 20px 28px;  
+  padding: 0;
+}
+nav.primary ul, nav.primary li {
+  list-style: none;
+}
+
+nav.primary li {
+  float: left;
+  margin-right: 20px;
+  font: 20px/24px 'Open Sans', Arial, sans-serif;
+  letter-spacing: -1px;
+}
+
+nav.primary li a {
+  text-decoration: underline;
+  color: #446344;
+  display: block;
+  padding: 3px 8px 3px 0;
+}
+
+nav.primary li.active a {
+  text-decoration: none;
+	color: #333;
+}
+
+nav.primary li a:hover {
+  text-decoration: underline;
+}
+
+
+/* @end */
+
+/* @group #main */
+
+#main {
+  padding: 20px 24px;
+  min-height: 100%;
+  background-color: #EFF;
+  margin: 0 auto;
+}
+
+
+#supercontainer h2 {
+  display:block;
+  background:#AADDDD;
+}
+#main a {
+  color: #0065bd;
+  text-decoration: underline;
+}
+#main a:visited {
+  color: #4f70bf;
+}
+#main a.button {
+  text-decoration: none;
+}
+#main p {
+  margin-bottom: 18px;
+}
+#main hr {
+  margin: 24px auto;
+  height: 8px;
+  width: 410px;
+  background-color: transparent;
+  border-style: none;
+  background: url(../images/hr.png) no-repeat 0 50%;
+}
+#main h1, #main h2 {
+  font-family: 'Aclonica', sans-serif;
+  color: #000;
+  
+}
+#main h1 {
+  font-size: 48px;
+  line-height: 54px;
+  margin-bottom: 30px;
+}
+#main h2 {
+  font-size: 36px;
+  line-height: 42px;
+  margin-bottom: 18px;
+}
+#main h3 {
+  font-family: 'Open Sans', serif;
+  font-size: 24px;
+  line-height: 30px;
+  margin-bottom: 18px;
+}
+
+#main ul {
+  list-style: disc;
+  margin-bottom: 18px;
+}
+#main li {
+  list-style: disc;
+  margin-left: 16px;
+  padding-left: 0px;
+  margin-bottom: 6px;
+}
+#main li ul {
+  margin-bottom: 0;
+}
+
+#main dl, #main dd, #main dd p {
+  margin-bottom: 18px;
+}
+#main dt {
+	font-weight: bold;
+	margin-bottom: 6px;
+}
+
+code {
+    background: #DDDDDD;
+    position: relative;
+    width: 94%;
+    margin: 10px 0px 0px 0px;
+    padding: 10px 10px 11px 10px;
+    border: 1px dotted #000000;
+    overflow: auto;
+    text-align: left;
+    display: block;
+}
+
+#highScoreListDiv {
+    background: #CCCCCC;
+    height: 760px;
+    display: none;
+}
+
+#hiddenPlayersDiv {
+    background: #CCCCCC;
+    height: 760px;
+    display: none;
+}
+
+
+
+/* @end */
+
+
+
+footer.primary {
+  padding: 12px 0;
+  margin: 12px 0;
+  text-align: center;
+  background-color: rgba(254,255,255,0.8);
+  font-size: 11px;
+  color: #666;
+}
+
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+    text-align: left;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+    text-align: left;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+    text-align: left;
+}

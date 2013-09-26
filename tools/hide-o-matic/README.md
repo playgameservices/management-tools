@@ -15,14 +15,14 @@ https://developers.google.com/games/services/management/api/index
 
 ## Setup and usage
 
-Open index.html in your browser and follow the directions.  
+Open hider.html in your browser and follow the directions.  
 
 To summarize:
 
    * Replace CLIENT_ID, APP_ID, and LEADERBOARD_ID in these two files
 with appropriate values from the Developer Console.
 
-   * Reload index.html and log in with the app owner's account (or
+   * Reload hider.html and log in with the app owner's account (or
 account with owner permissions).
 
    * Hide or unhide players by playerId.

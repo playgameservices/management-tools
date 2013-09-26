@@ -15,7 +15,7 @@
 
 // Please fill these out with the values from your
 // actual game.  DON'T FORGET TO FILL OUT CLIENT_ID
-// IN index.html!
+// IN hider.html!
 var APP_ID = 'APP_ID';
 var LEADERBOARD_ID = 'LEADERBOARD_ID';
 
