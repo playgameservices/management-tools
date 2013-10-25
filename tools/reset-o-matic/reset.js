@@ -85,6 +85,7 @@ var createAchievementList = function(root, items) {
 
     cell = document.createElement('th');
     cell.appendChild(document.createTextNode('steps'));
+    cell.setAttribute('colSpan','2');
     row.appendChild(cell);
 
     cell = document.createElement('th');
