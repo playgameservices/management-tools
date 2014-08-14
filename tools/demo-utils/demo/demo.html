@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Sample Styles -->
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+
+    <!-- Supporting Scripts -->
+    <script src="js/achievements.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/leaderboards.js"></script>
+
+    <!-- Polymer -->
+    <script src="../bower_components/platform/platform.js"></script>
+    <link rel="import" href="../bower_components/core-icons/core-icons.html">
+    <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+    <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="../bower_components/font-roboto/roboto.html">
+
+    <!-- Material Paper -->
+    <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../bower_components/paper-button/paper-button.html">
+    <link rel="import" href="../bower_components/paper-input/paper-input.html">
+    <link rel="import" href="../bower_components/paper-item/paper-item.html">
+    <link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
+    <link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
+    <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+  </head>
+  <body fullbleed unresolved touch-action="auto">
+  <core-header-panel>
+    <core-toolbar class="medium-tall">
+      <paper-menu-button icon="menu" halign="left">
+        <paper-item id="signinButton">
+          <div style="margin-top: 10px;">
+            <span>
+              <span
+                class="g-signin"
+                data-callback="signinCallback"
+                data-clientid="YOUR_CLIENT_ID"
+                data-cookiepolicy="single_host_origin"
+                data-scope="https://www.googleapis.com/auth/games">
+              </span>
+            </span>
+          </div>
+        </paper-item>
+        <paper-item id="signoutButton"
+            onClick="gapi.auth.signOut()"
+            style="font-size:15px; color:#000; display:none;"
+            label="Signout"></paper-item>
+        <paper-item id="disconnectButton"
+            style="font-size:15px; color:#000; display:none;"
+            label="Disconnect"></paper-item>
+      </paper-menu-button>
+
+      <div flex>Demo:  Google Play Games Management Console</div>
+
+      <div class="bottom fit" horizontal layout>
+        <paper-tabs selected="0" flex style="max-width: 600px;">
+          <paper-tab>Achievements</paper-tab>
+          <paper-tab>Leaderboards</paper-tab>
+          <paper-tab>Events/Quests</paper-tab>
+          <paper-tab>Snapshots</paper-tab>
+        </paper-tabs>
+      </div>
+    </core-toolbar>
+    <div class="container" layout vertical center>
+      <core-pages class="mainPages" selected="0">
+
+        <div id='achievements' class='core-selected' active>
+          <div vertical layout style="margin-bottom: auto">
+            <div>
+            <h2 class="pageHeading">Achievements Management</h2>
+            </div>
+            <div class="mainContent" flex>
+              <p>
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div flex></div>
+                  <div>
+                    <paper-button raisedButton class="achieveButton"
+                       onClick="showAchievementList(null)"
+                       label="Refresh achievements" ></paper-button>
+                  </div>
+                </div>
+                <div flex id="achievementListDiv"></div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <div horizontal layout>
+                    <div><b>Unlock</b> this achievement for me:
+                    <p>
+                    <paper-input id="unlockAchievementInput"
+                        label="Achievement ID" style="width:300px;">
+                    </paper-input>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton class="achieveButton"
+                      onClick="unlockAchievement()" label="Unlock"></paper-button>
+                </div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm">
+                <div flex style="display:table-cell; vertical-align:middle">
+                  <span><b>Increment</b> this achievement for me:</span>
+                  <p>
+                  <paper-input id="stepsAchievementInput" style="width:300px;" label="Achievement ID">
+                  </paper-input>
+                  <p>
+                  <span>Number of steps: </span>
+                  <p>
+                  <paper-input number id="stepsInput" style="width:50px;" label="Steps"></paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton class="achieveButton"
+                      onClick="incrementAchievement()" label="Increment">
+                  </paper-button>
+                </div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <b>Reset</b> this achievement for me.
+                  <p>
+                  <paper-input id="resetAchievementInput" style="width:300px;" label="Achievement ID">
+                  </paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton onClick="resetAchievement()"
+                      class="achieveButton" label="reset"></paper-button>
+                </div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm"
+                  style="padding-top: 10px; padding-bottom: 10px;">
+                <div flex>
+                  <span><b>Reset all achievements</b> for me:</span>
+                </div>
+                  <p>
+                <div>
+                  <paper-button raisedButton onClick="resetAllAchievements()"
+                      class="achieveButton" label="Reset All"></paper-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id='leaderboard'>
+          <div vertical layout style="margin-bottom: auto">
+            <div>
+              <h2 class="pageHeading" >Leaderboard Management</h2>
+            </div>
+            <div flex class="mainContent">
+              <p>
+              <div vertical layout class="miniForm">
+                <div horizontal layout>
+                  <div flex></div>
+                  <div>
+                    <paper-button raisedButton class="leaderButton"
+                       label="Refresh leaderboard list"
+                       onClick="showLeaderboardList(null)"></paper-button>
+                  </div>
+                </div>
+                <div id="leaderboardListDiv"></div>
+                <p>
+                <div id="scoresListDiv"></div>
+              </div>
+              <div vertical layout class="miniForm">
+                <div horizontal layout>
+                  <div flex>
+                    <paper-input id="leaderboardIdShowHS" label="Leaderboard ID"
+                        style="margin-right: 50px; width:150px">
+                    </paper-input>
+                  </div>
+                  <div>
+                    <paper-button raisedButton class="leaderButton"
+                       label="Refresh high scores"
+                       onClick="showHighScoreList(null)">
+                    </paper-button>
+                  </div>
+                </div>
+                <div id="highScoreListDiv"></div>
+                <div horizontal layout>
+                  <div flex></div>
+                  <div>
+                    <paper-button raisedButton class="leaderButton"
+                       label="Refresh hidden players"
+                       onClick="showHiddenPlayers(null)">
+                    </paper-button>
+                  </div>
+                </div>
+                <div id="hiddenPlayersDiv"></div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <div><b>Hide</b> this player Id:</div>
+                  <paper-input id="playerIdHideInput"
+                     style="width:300px;" label="playerId">
+                  </paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton class="leaderButton"
+                      onClick="hidePlayer()">Hide</paper-button>
+                </div>
+              </div>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <div><b>Unhide</b> this player Id:</div>
+                  <paper-input id="playerIdUnhideInput"
+                      style="width:300px;" label="playerId">
+                  </paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton class="leaderButton"
+                      onClick="unhidePlayer()" label="Unhide"></paper-button>
+                </div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <div><b>Submit score</b> for this leaderboard:</div>
+                  <paper-input id="leaderboardIdInput"
+                      label="Leaderboard ID" style="width:300px;">
+                  </paper-input>
+                  <paper-input id="playerScoreInput"
+                      style="width:100px;" label="Score">
+                  </paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                <paper-button raisedButton style="margin-left:10px; margin-top:10px" class="leaderButton"
+                    onClick="submitScore()" label="Submit"></paper-button>
+                </div>
+              </div>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <div><b>Reset</b> my scores on this leaderboard:</div>
+                  <paper-input id="leaderboardResetIdInput" style="width:300px;"
+                      label="Leaderboard ID">
+                  </paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton class="leaderButton"
+                      onClick="resetLeaderboard()" label="Reset">
+                  </paper-button>
+                </div>
+              </div>
+              <p>Remove access to this app by going to:
+                <a href="http://plus.google.com/apps">your app controls page.</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id='eventsQuests'>
+          <div vertical layout style="margin-bottom: auto">
+            <div>
+            <h2 class="pageHeading">Events and Quests Management</h2>
+            </div>
+            <div class="mainContent" flex>
+            <ul>
+              <li>gamesManagement.events.reset</li>
+              <li>gamesManagement.events.resetAll</li>
+              <li>gamesManagement.events.resetForAllPlayers</li>
+            </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id='snapshots'>
+          <div vertical layout style="margin-bottom: auto">
+            <div>
+            <h2 class="pageHeading">Snapshots Management</h2>
+            </div>
+            <div class="mainContent" flex>
+            </div>
+          </div>
+        </div>
+
+      </core-pages>
+    </div
+  </core-header-panel>
+  <div style="color:#ff0000;" id="errorDiv"> </div>
+  </body>
+
+  <script>
+    var tabs = document.querySelector('paper-tabs');
+
+    var colors = {
+      accent1: '#00bcd4',
+      accent2: '#e81d62',
+      accent3: '#9f499b',
+      accent4: '#3e50b4'
+    };
+
+    tabs.addEventListener('core-select', function() {
+      var pages = document.querySelector('core-pages');
+      pages.selected = (pages.selected + 1) % pages.children.length;
+
+      console.log("Selected: " + tabs.selected);
+
+      var pageIds = [
+        {selectorId: 0, idString: '#achievements', color: colors.accent1},
+        {selectorId: 1, idString: '#leaderboard', color: colors.accent2},
+        {selectorId: 2, idString: '#eventsQuests', color: colors.accent3},
+        {selectorId: 3, idString: '#snapshots', color: colors.accent4}
+      ];
+
+      for (var i=0; i < pageIds.length; i++){
+        if (pageIds[i].selectorId == tabs.selected){
+          var highlight = document.querySelector(pageIds[i].idString);
+          highlight.classList.add('core-selected');
+          highlight.style.display='block';
+          document.querySelector('core-toolbar').style.backgroundColor =
+              pageIds[i].color;
+          document.querySelector('paper-tabs').style.backgroundColor =
+              pageIds[i].color;
+        }else{
+          var highlight = document.querySelector(pageIds[i].idString);
+          highlight.classList.remove('core-selected');
+          highlight.style.display='none';
+        }
+      }
+    });
+  </script>
+<!-- Place this asynchronous JavaScript just before your </body> tag -->
+<script type="text/javascript">
+
+/** Callback on signin check.
+ *  Signin check happens both on page load and when you click
+ *  the actual signin button.
+ */
+function signinCallback(authResult) {
+    if (authResult['access_token']) {
+        // Successfully authorized
+        // Hide the sign-in button now that the user is authorized, for example:
+        document.getElementById('signinButton').style.display= 'none';
+        document.getElementById('signoutButton').style.display =  'block';
+        document.getElementById('disconnectButton').style.display =  'block';
+        init_achievements();
+    } else if (authResult['error']) {
+        // There was an error.
+        // Possible error codes:
+        //   "access_denied" - User denied access to your app
+        //   "immediate_failed" - Could not automatically log in the user
+        console.log('There was an error: ' + authResult['error']);
+
+        document.getElementById('signinButton').style.display= 'block';
+        document.getElementById('signoutButton').style.display =  'none';
+        document.getElementById('disconnectButton').style.display =  'none';
+  }
+}
+
+/**
+ * Async load of Google API client libraries and signin script.
+ */
+(function() {
+  var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+  po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+})();
+</script>
+</html>

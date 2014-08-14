@@ -1,0 +1,26 @@
+{
+  "name": "demo-utils",
+  "version": "0.0.0",
+  "authors": [
+    "Gus Class <class@google.com>"
+  ],
+  "description": "Demo Google Play Games Services management tool.",
+  "main": "demo.html",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.4",
+    "paper-elements": "Polymer/paper-elements#~0.3.4",
+    "core-ajax": "Polymer/core-ajax#~0.3.4"
+  }
+}
