@@ -34,7 +34,6 @@ var updateEventsList = function(pageToken) {
       content    += '  </tr>\n';
 
       var events = response.items;
-      console.log(events);
       for (var i=0; i < events.length; i++){
         content  += '  <tr style="background:#fff;">\n';
         content  += '    <td>' + events[i].displayName + '</td>';
@@ -105,8 +104,11 @@ var updateQuestsList = function () {
     function(response){
       var content = '';
       var quests = response.items;
-      console.log(quests);
+      if (!quests) return;
       for (var i=0; i < quests.length; i++){
+        if (i > 0) {
+          content += '<hr>';
+        }
         content  += '<h3>' + quests[i].name + ' - ' + quests[i].description +
                     '</h3><paper-button label="accept" ' +
                     'onClick="acceptQuest(\'' + quests[i].id +
@@ -159,9 +161,12 @@ var updateQuestsList = function () {
 
 /**
  * Accepts a quest, opening it up to be contributed towards.
+ *
+ * @param {string} questId The identifier for the quest to accept.
  */
 function acceptQuest(questId){
   gapi.client.games.quests.accept({questId: questId}).execute(function(resp){
+    console.log('Accepted request response:');
     console.log(resp);
   });
 }
@@ -193,6 +198,7 @@ var setCurrentEventId = function(id){
 var resetQuest = function(questId){
   gapi.client.gamesManagement.quests.reset({questId: questId}).execute(
       function(resp){
+        console.log('A quest was reset.');
         console.log(resp);
       });
 }
@@ -205,7 +211,7 @@ var resetCurrentEvent = function(){
   var eventId = getCurrentEventId();
   gapi.client.gamesManagement.events.reset({eventId: eventId}).execute(
       function(resp){
-        console.log('Event reset, response:');
+        console.log('Current Event Reset');
         console.log(resp);
       });
 }
@@ -229,7 +235,7 @@ var resetAllEventsForMe = function() {
 var resetCurrentEventForAll = function(){
   console.log('Resetting current event for everybody.');
   var eventId = getCurrentEventId();
-  gamesManagement.events.resetForAllPlayer({eventId: eventId}).
+  gapi.client.gamesManagement.events.resetForAllPlayers({eventId: eventId}).
       execute(function(resp){
         console.log('Events reset, response:');
         console.log(resp);
