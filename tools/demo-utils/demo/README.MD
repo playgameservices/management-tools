@@ -1,9 +1,10 @@
-# Google Play Games Management Demo
+# Google Play Games Management Demo #
 
 This demo shows you how to create a dashboard for managing projects in
 Google Play Games.
 
-## Installation
+## Installation ##
+
 First, install bower:
 
   npm install -g bower
