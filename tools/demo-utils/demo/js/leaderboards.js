@@ -373,18 +373,3 @@ var onLoadCallback = function() {
   window.setTimeout(continueLoadingLibraries, 1);
 };
 
-
-var continueLoadingLibraries = function() {
-    div = document.getElementById('errorDiv');
-    if (APP_ID == 'APP_ID') {
-        div.innerHTML = '<h3>Warning:  You have not yet set the APP_ID!</h3>';
-    } else {
-        div.innerHTML = '';
-    }
-    gapi.client.load('games', 'v1', function(response) {
-                         console.log('Games loaded.');
-                     });
-    gapi.client.load('gamesManagement', 'v1management', function(response) {
-                         console.log('Management loaded');
-                     });
-};

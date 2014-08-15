@@ -22,9 +22,11 @@ var quests = {};
 /**
  * Updates the list of available events.
  *
+ * @param {?string} pageToken The next page token from the previous API call.
  * TODO (class) Move HTML generation into helper.
  */
 var updateEventsList = function(pageToken) {
+  //gapi.client.games.events.listDefinitions({pageToken: pageToken}).execute(
   gapi.client.games.events.listDefinitions().execute(
     function(response){
       var content = '<table cellpadding=2 cellspacing=0 border=0>\n';
@@ -48,6 +50,11 @@ var updateEventsList = function(pageToken) {
       }
 
       content    += '</table>'
+      // TODO (class) Needs to use the pageToken.
+      // if (response.nextPageToken){
+      //   content += '<paper-button onClick="updateEventsList(\'' +
+      //       response.nextPageToken + '\'" class="eqButton"></paper-button>';
+      // }
       document.getElementById('eventsBox').innerHTML = content;
     }
   );
@@ -97,9 +104,12 @@ var incrementEvent = function(id, count) {
 /**
  * Updates the list of available quests and associated events.
  *
+ * @param {?string} pageToken The next page token from the previous API call.
  * TODO (class) Clean up HTML generation into Polymer components.
  */
-var updateQuestsList = function () {
+var updateQuestsList = function (pageToken) {
+  //gapi.client.games.quests.list({playerId:'me', pageToken: pageToken}).
+  //    execute(
   gapi.client.games.quests.list({playerId:'me'}).execute(
     function(response){
       var content = '';

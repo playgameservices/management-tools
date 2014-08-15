@@ -298,4 +298,7 @@ var continueLoadingLibraries = function() {
     gapi.client.load('gamesManagement', 'v1management', function(response) {
                          console.log('Management loaded');
                      });
+    gapi.client.load('drive', 'v2', function(response) {
+       console.log('Drive loaded.');
+     });
 };
