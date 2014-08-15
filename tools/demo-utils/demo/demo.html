@@ -7,8 +7,9 @@
     <!-- Supporting Scripts -->
     <script src="js/achievements.js"></script>
     <script src="js/constants.js"></script>
-    <script src="js/player.js"></script>
+    <script src="js/eventsquests.js"></script>
     <script src="js/leaderboards.js"></script>
+    <script src="js/player.js"></script>
 
     <!-- Polymer -->
     <script src="../bower_components/platform/platform.js"></script>
@@ -36,7 +37,7 @@
               <span
                 class="g-signin"
                 data-callback="signinCallback"
-                data-clientid="YOUR_CLIENT_ID"
+                data-clientid="425536046218-0h1t8td0salbp6i10hlmqmqrajamgvdj.apps.googleusercontent.com"
                 data-cookiepolicy="single_host_origin"
                 data-scope="https://www.googleapis.com/auth/games">
               </span>
@@ -261,11 +262,54 @@
             <h2 class="pageHeading">Events and Quests Management</h2>
             </div>
             <div class="mainContent" flex>
-            <ul>
-              <li>gamesManagement.events.reset</li>
-              <li>gamesManagement.events.resetAll</li>
-              <li>gamesManagement.events.resetForAllPlayers</li>
-            </ul>
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div id="eventsBox" flex></div>
+                  <div style="text-align:right;">
+                    <paper-button raisedButton class="eqButton"
+                       onClick="updateEventsList()"
+                       label="Refresh Events" ></paper-button>
+                    <p>
+                  </div>
+                </div>
+              </div>
+              <p>
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div id="questsBox" flex></div>
+                  <div>
+                    <paper-button raisedButton class="eqButton"
+                       onClick="updateQuestsList()"
+                       label="Refresh Quests" ></paper-button>
+                  </div>
+                </div>
+              </div>
+              <p>
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div flex>
+                    <paper-input id="selectedEvent"
+                        label="Selected Event" style="width:300px;">
+                    </paper-input>
+                  </div>
+                  <div style="text-align:right;">
+                    <p>
+                    <paper-button raisedButton class="eqButton"
+                       onClick="resetCurrentEvent()"
+                       label="Reset event for me" ></paper-button>
+                    <p>
+                    <paper-button raisedButton class="eqButton"
+                       onClick="resetAllEventsForMe()"
+                       label="Reset all my events" ></paper-button>
+                    <p>
+                    <paper-button raisedButton class="eqButton"
+                       onClick="resetCurrEventForAll()"
+                       label="Reset Event for All Players" ></paper-button>
+                  </div>
+                </div>
+              </div>
+              <ul>
+              </ul>
             </div>
           </div>
         </div>

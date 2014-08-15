@@ -1,5 +1,6 @@
 var drive = drive || {};
 var lastSnapshot = {};
+// TODO (class) Use namespace and make state members internal.
 
 /**
  * List snapshots for the current user.
@@ -13,7 +14,7 @@ function listSnapshots(playerId, callback) {
       console.log(resp);
     }
   }
-  gapi.client.games.snapshots.list({playerId: }).execute(callback)
+  gapi.client.games.snapshots.list({playerId: 'me'}).execute(callback)
 }
 
 /**

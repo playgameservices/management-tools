@@ -16,6 +16,7 @@
 // How many async loads have happened?
 var leaderboards = {};
 
+// TODO (class) Use namespace and make state members internal.
 
 /** Creates list of leaderboards with buttons to get scores
  * @param {Object} root the element you want to append this to.

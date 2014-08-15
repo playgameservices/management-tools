@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+// TODO (class) Use namespace and make state members internal.
 
 /** Creates list of players and, if available, scores
  * @param {Object} root the element you want to append this to.
