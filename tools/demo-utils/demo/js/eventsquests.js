@@ -45,7 +45,9 @@ var updateEventsList = function(pageToken) {
         content  += '    <td style="text-align: center;" id="' +events[i].id +
             '"></td>\n';
         content  += '    <td><button onclick="incrementEvent(\'' +
-            events[i].id + '\', 1);">trigger</button></td>\n';
+            events[i].id + '\', 1);">trigger</button>\n';
+        content  += '    <button onclick="setCurrentEventId(\'' +
+            events[i].id + '\', 1);">pick</button></td>\n';
         content  += '  </tr>\n';
       }
 

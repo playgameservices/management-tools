@@ -1,6 +1,9 @@
 var snapshot = snapshot || {};
 var drive = drive || {};
-var lastSnapshot = {};
+var currSnapshotIds = [];
+var writtenData;
+
+snapshot.lastSnapshot = {};
 
 drive.DRIVE_HOST_PATH = 'https://googledrive.com/host/';
 drive.HOST_FOLDER = "snapshotImages";
@@ -12,18 +15,35 @@ drive.HOST_FOLDER = "snapshotImages";
 function updateSnapshotList(){
   var callback = function (resp){
     console.log(resp);
-    var content = '';
-    for (var i = 0; i < resp.items.length; i++){
-      content += '<paper-radio-button ' +
-          'onClick="document.getElementById(\'selectedSnapshot\').value =\'' +
-          resp.items[i].id + '\';"></paper-radio-button> &nbsp;' +
-          resp.items[i].description + '<p>';
+    var content = '<form>';
+    if (resp.items){
+      currSnapshotIds = [];
+      for (var i = 0; i < resp.items.length; i++){
+        currSnapshotIds[currSnapshotIds.length] = resp.items[i].id;
+        content += '<paper-radio-button toggles="true" id="' +
+            resp.items[i].id + '" ' +
+            'onClick="toggleSnapshot(\'' +
+            resp.items[i].id + '\');"></paper-radio-button> &nbsp;' +
+            resp.items[i].description + '<p><img src="' +
+            resp.items[i].coverImage.url + '"></img>' +
+            ((i < (resp.items.length - 1)) ? '<hr>' : '');
+      }
     }
-    content += '</ul>';
+    content += '</form>';
     document.getElementById('snapshotsListArea').innerHTML = content;
   };
 
   snapshot.listSnapshots('me', callback);
+}
+
+function toggleSnapshot(id){
+  // Toggle all the unselected radio buttons off.
+  for (var i=0; i < currSnapshotIds.length; i++){
+    if (currSnapshotIds[i] != id){
+      document.getElementById(currSnapshotIds[i]).checked = false;
+    }
+  }
+  document.getElementById('selectedSnapshot').value = id;
 }
 
 
@@ -56,6 +76,7 @@ snapshot.peekCurrentSnapshot = function(){
   gapi.client.games.snapshots.get({snapshotId: snapshotId}).execute(
     function(resp){
       console.log(resp);
+      lastSnapshot = resp;
       snapshot.peekSnapshotData(resp.driveId);
     }
   );
@@ -69,16 +90,17 @@ snapshot.peekCurrentSnapshot = function(){
  */
 snapshot.peekSnapshotData = function (driveId) {
   var callback = function(resp){
-    console.log(resp);
     document.getElementById('snapshotEditArea').innerHTML =
       '<h3>Raw Snapshot Metadata</h3><br>' +
       '<textarea style="width:600px; height: 800px;">' +
       JSON.stringify(resp.result, undefined, 2) + '</textarea><hr>';
+    snapshot.lastSnapshot = resp;
 
     var innerCallback = function(ss) {
       document.getElementById('snapshotEditArea').innerHTML +=
         '<h3>Raw Snapshot Data</h3><br>' +
-        '<textarea style="width: 600px; height 400px;">' + ss + '</textarea>';
+        '<textarea id="ssRawData" style="width: 600px; height 400px;">' +
+        ss + '</textarea>';
     }
     drive.downloadFile(resp, innerCallback);
   };
@@ -96,7 +118,53 @@ snapshot.peekSnapshotData = function (driveId) {
  * @param {string} snapshotId The identifier for the snapshot to modify.
  */
 function pokeCurrentSnapshot() {
+  snapshot.uploadSnapshot();
 }
+
+
+/**
+ * Callback function that uploads metadata for a snapshot.
+ */
+snapshot.uploadSnapshot = function(callback) {
+  var contentType = 'application/octet-stream';
+  var boundary = '-------374159275358879320846';
+  var delimiter = "\r\n--" + boundary + "\r\n";
+  var close_delim = "\r\n--" + boundary + "--";
+
+  console.log("Writing snapshot: ");
+  console.log(snapshot.lastSnapshot);
+
+  // Update the description in the snapshot metadata.
+  //lastSnapshot.coverImage.url = imageFile.webContentLink;
+  snapshot.lastSnapshot.description = 'Modified data at: ' + new Date();
+
+  var base64Data = btoa(document.getElementById('ssRawData'));
+  var multipartRequestBody =
+      delimiter +
+      'Content-Type: application/json\r\n\r\n' +
+      JSON.stringify(snapshot.lastSnapshot) +
+      delimiter +
+      'Content-Type: ' + contentType + '\r\n' +
+      'Content-Transfer-Encoding: base64\r\n' +
+      '\r\n' +
+      base64Data +
+      close_delim;
+
+  var request = gapi.client.request({
+      'path': '/upload/drive/v2/files/' + snapshot.lastSnapshot.id,
+      'method': 'PUT',
+      'params': {'uploadType': 'multipart', 'alt': 'json'},
+      'headers': {
+        'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+      },
+      'body': multipartRequestBody});
+  if (!callback) {
+    callback = function(file) {
+      console.log(file)
+    };
+  }
+  request.execute(callback);
+};
 
 
 /**
@@ -117,7 +185,7 @@ snapshot.findSnapshot = function(){
   // TODO: show conflicts
   // Find the snapshot save file
   gapi.client.drive.files.list(
-    {q:'title = "' + model.lastSnapshot.title + '" and mimeType = ' +
+    {q:'title = "' + snapshot.lastSnapshot.title + '" and mimeType = ' +
         '"application/vnd.google-play-games.snapshot"'}).
       execute(function(r){console.log(r)});
 }

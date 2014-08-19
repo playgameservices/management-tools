@@ -330,7 +330,6 @@
                     </paper-input>
                     <div id="snapshotsListArea"></div>
                     <hr>
-                    <div id="snapshotEditArea"></div>
                   </div>
                   <div style="text-align:right;">
                     <p>
@@ -338,14 +337,22 @@
                        onClick="updateSnapshotList()"
                        label="Refresh Snapshot List" ></paper-button>
                     <p>
-                    <p>
                     <paper-button raisedButton class="snapButton"
                        onClick="snapshot.peekCurrentSnapshot()"
                        label="Peek Selected" ></paper-button>
-                    <p>
+                  </div>
+                </div>
+              </div>
+              <p>
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div flex style="text-align:left;">
+                    <div id="snapshotEditArea"></div>
+                  </div>
+                  <div style="text-align:right;">
                     <paper-button raisedButton class="snapButton"
-                       onClick="pokeSelectedSnapshot()"
-                       label="Write Selected" ></paper-button>
+                       onClick="pokeCurrentSnapshot()"
+                       label="Write Data" ></paper-button>
                   </div>
                 </div>
               </div>
