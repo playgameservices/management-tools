@@ -37,6 +37,7 @@ from the Google Play Developer Console.
 
 ## Using the sample ##
 When you open the sample, you will notice four tabs:
+
 1. Achievements
 2. Leaderboards
 3. Events/Quests
@@ -85,5 +86,7 @@ From this page, you can
 * Look at snapshot data
 * Alter data within snapshots
 
-This is useful for testing your snapshot data. **Note** Writing snapshot data
+This is useful for testing your snapshot data.
+
+**Note** Writing snapshot data
 is experimental from the Web API and should not be done on production data.
