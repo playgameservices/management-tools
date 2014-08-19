@@ -88,5 +88,5 @@ From this page, you can
 
 This is useful for testing your snapshot data.
 
-**Note** Writing snapshot data
-is experimental from the Web API and should not be done on production data.
+**Note** Writing snapshot data from the Web API is experimental and should not
+be done on production data.
