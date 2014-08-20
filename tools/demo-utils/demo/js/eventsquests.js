@@ -26,8 +26,9 @@ var quests = {};
  * TODO (class) Move HTML generation into helper.
  */
 var updateEventsList = function(pageToken) {
-  //gapi.client.games.events.listDefinitions({pageToken: pageToken}).execute(
-  gapi.client.games.events.listDefinitions().execute(
+  console.log("Update Events List");
+  gapi.client.games.events.listDefinitions({maxResults: 10, pageToken: pageToken
+      }).execute(
     function(response){
       var content = '<table cellpadding=2 cellspacing=0 border=0>\n';
       content    += '  <tr style="color:#fff; background:#9F499B;">\n';
@@ -52,11 +53,11 @@ var updateEventsList = function(pageToken) {
       }
 
       content    += '</table>'
-      // TODO (class) Needs to use the pageToken.
-      // if (response.nextPageToken){
-      //   content += '<paper-button onClick="updateEventsList(\'' +
-      //       response.nextPageToken + '\'" class="eqButton"></paper-button>';
-      // }
+
+      if (response.nextPageToken){
+        content += '<paper-button onClick="updateEventsList(\'' +
+            response.nextPageToken + '\')" label="next" class="eqButton"></paper-button>';
+      }else{ console.log(response); }
       document.getElementById('eventsBox').innerHTML = content;
     }
   );
@@ -110,9 +111,8 @@ var incrementEvent = function(id, count) {
  * TODO (class) Clean up HTML generation into Polymer components.
  */
 var updateQuestsList = function (pageToken) {
-  //gapi.client.games.quests.list({playerId:'me', pageToken: pageToken}).
-  //    execute(
-  gapi.client.games.quests.list({playerId:'me'}).execute(
+  gapi.client.games.quests.list({playerId:'me', maxResults:5,
+      pageToken: pageToken}).execute(
     function(response){
       var content = '';
       var quests = response.items;
@@ -164,6 +164,12 @@ var updateQuestsList = function (pageToken) {
           content  += '    </td>';
         }
         content    += '</table>\n';
+      }
+
+      if (response.nextPageToken){
+        content += '<paper-button class="eqButton" label="Next" onClick="' +
+            'updateQuestsList(\'' + response.nextPageToken + '\')">' +
+            '</paper-button>';
       }
 
       document.getElementById('questsBox').innerHTML = content;

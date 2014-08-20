@@ -36,8 +36,11 @@ function updateSnapshotList(){
   snapshot.listSnapshots('me', callback);
 }
 
+
+/**
+ * Toggles the currently selected radio button on and all others off.
+ */
 function toggleSnapshot(id){
-  // Toggle all the unselected radio buttons off.
   for (var i=0; i < currSnapshotIds.length; i++){
     if (currSnapshotIds[i] != id){
       document.getElementById(currSnapshotIds[i]).checked = false;
@@ -138,7 +141,7 @@ snapshot.uploadSnapshot = function(callback) {
   //lastSnapshot.coverImage.url = imageFile.webContentLink;
   snapshot.lastSnapshot.description = 'Modified data at: ' + new Date();
 
-  var base64Data = btoa(document.getElementById('ssRawData'));
+  var base64Data = btoa(document.getElementById('ssRawData').value);
   var multipartRequestBody =
       delimiter +
       'Content-Type: application/json\r\n\r\n' +
@@ -179,13 +182,15 @@ snapshot.updateLastSnapshot = function(snapshotId){
 }
 
 /**
- * Finds and saves the snapshot.
+ * Finds open conflicts for a snapshot.
+ *
+ * @param {String} snapshotTitle The snapshot title to find conflicts for.
  */
-snapshot.findSnapshot = function(){
-  // TODO: show conflicts
+snapshot.findSnapshotConflicts = function(snapshotTitle){
+  // TODO (class) show conflicts
   // Find the snapshot save file
   gapi.client.drive.files.list(
-    {q:'title = "' + snapshot.lastSnapshot.title + '" and mimeType = ' +
+    {q:'title = "' + snapshot.title + '" and mimeType = ' +
         '"application/vnd.google-play-games.snapshot"'}).
       execute(function(r){console.log(r)});
 }
