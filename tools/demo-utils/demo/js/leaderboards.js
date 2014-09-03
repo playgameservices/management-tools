@@ -5,7 +5,7 @@
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ var leaderboards = {};
  * @param {Object} root the element you want to append this to.
  * @param {Array} leaderboards a list of leaderboards.
  */
-var createLeaderboardList = function(root, leaderboards) {
+leaderboards.createLeaderboardList = function(root, leaderboards) {
 
     if (!leaderboards) {
         leaderboards = [];
@@ -114,7 +114,8 @@ var createLeaderboardList = function(root, leaderboards) {
         button.setAttribute('name', 'edit');
         button.setAttribute('value', item.id);
         button.appendChild(document.createTextNode('Get my scores!'));
-        button.addEventListener('click', sendLeaderboardDataToInputs, false);
+        button.addEventListener('click',
+            sendLeaderboardDataToInputs, false);
         cell.appendChild(button);
         row.appendChild(cell);
 
@@ -124,12 +125,12 @@ var createLeaderboardList = function(root, leaderboards) {
 };
 
 
-/** Creates visible list of scores
+/**
+ * Creates visible list of scores
  * @param {Object} root the element you want to append this to.
  * @param {Array} scores a list of high scores.
  */
-var createScoresList = function(root, scores) {
-
+leaderboards.createScoresList = function(root, scores) {
     if (!scores) {
         scores = [];
     }
@@ -213,7 +214,13 @@ var createScoresList = function(root, scores) {
     root.appendChild(tab);
 };
 
-function createPageButton(text, handler) {
+
+/**
+ * Creates the page button for leaderboards.
+ * @param {string} text The button title.
+ * @param {function} handler The function called when the button is clicked.
+ */
+leaderboards.createPageButton = function(text, handler) {
     var button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.setAttribute('name', 'edit');
@@ -224,9 +231,11 @@ function createPageButton(text, handler) {
     return button;
 }
 
-/** Load a list of leaderboards and show it
- * @param {String} pageToken a REST API paging token string, or null. */
-function showLeaderboardList(pageToken) {
+/**
+ * Load a list of leaderboards and show it
+ * @param {String} pageToken a REST API paging token string, or null.
+ */
+leaderboards.showLeaderboardList = function(pageToken) {
     document.querySelector('#leaderboardListDiv').innerHTML = '';
     document.querySelector('#leaderboardListDiv').style.display = 'block';
 
@@ -244,31 +253,34 @@ function showLeaderboardList(pageToken) {
             }
 
             var root = document.getElementById('leaderboardListDiv');
-            createLeaderboardList(root, response.items);
+            leaderboards.createLeaderboardList(root, response.items);
 
             if (response.prevPageToken) {
                 root.appendChild(
-                    createPageButton(
+                    leaderboards.createPageButton(
                         'Prev',
                         function(event) {
-                            showHighScoreList(response.prevPageToken);}));
+                            player.showHighScoreList(response.prevPageToken);
+                            }));
             }
             if (response.nextPageToken) {
                 root.appendChild(
-                    createPageButton(
+                    leaderboards.createPageButton(
                         'Next',
                         function(event) {
-                            showHighScoreList(response.nextPageToken);}));
+                            player.showHighScoreList(response.nextPageToken);
+                            }));
             }
         });
 }
 
 
-/** Load the current set of scores.  No paging token, since you
+/**
+ * Load the current set of scores.  No paging token, since you
  * can at most get three scores back (ALL_TIME, WEEKLY, DAILY)
  * @param {string} leaderboardId Leaderboard you wish to get scores for
  */
-function showScoresList(leaderboardId) {
+leaderboards.showScoresList = function(leaderboardId) {
     document.querySelector('#scoresListDiv').innerHTML = '';
     document.querySelector('#scoresListDiv').style.display = 'block';
     // Create the request.
@@ -285,16 +297,20 @@ function showScoresList(leaderboardId) {
                 return;
             }
             var root = document.getElementById('scoresListDiv');
-            createScoresList(root, response.items);
+            leaderboards.createScoresList(root, response.items);
         });
 }
 
 
-/** Responds to "Get my scores!"
+/**
+ * Responds to "Get my scores!"
  * Fills in the textboxes at the bottom of the page with the right data
  * and loads the high score list.
- * @param {Object} event the mouse event from clicking the button*  */
-var sendLeaderboardDataToInputs = function(event) {
+ * @param {Object} event the mouse event from clicking the button*
+ *
+ * Note: This must be global.
+ */
+sendLeaderboardDataToInputs = function(event) {
     console.log(event.target.value);
     document.getElementById('leaderboardIdInput').value =
         event.target.value;
@@ -302,12 +318,12 @@ var sendLeaderboardDataToInputs = function(event) {
         event.target.value;
     document.getElementById('leaderboardResetIdInput').value =
         event.target.value;
-    showScoresList(event.target.value);
+    leaderboards.showScoresList(event.target.value);
 };
 
 
 /** Submit a high score */
-var submitScore = function() {
+leaderboards.submitScore = function() {
     var id = document.getElementById('leaderboardResetIdInput').value;
     if (id == '') {
         alert('You need to enter a valid leaderboard id.');
@@ -337,8 +353,10 @@ var submitScore = function() {
 };
 
 
-/** Resets a given player's score on a leaderboard. */
-var resetLeaderboard = function() {
+/**
+ * Resets a given player's score on a leaderboard.
+ */
+leaderboards.resetLeaderboard = function() {
   var id = document.getElementById('leaderboardResetIdInput').value;
   if (id == '') {
     alert('You need to enter a valid leaderboard id.');
@@ -361,15 +379,19 @@ var resetLeaderboard = function() {
 };
 
 
-/** We have to wait for two libraries to load and then
- * signin to occur before it's safe to show the logged in UI. */
-function checkAllUnitsLoaded() {
+/**
+ * We have to wait for two libraries to load and then
+ * signin to occur before it's safe to show the logged in UI.
+ */
+leaderboards.checkAllUnitsLoaded = function() {
 }
 
 
-/** Callback from loading client library.  You need a brief pause before
-    you initiate new loads and really start the app. */
+/**
+ * Callback from loading client library.  You need a brief pause before
+ * you initiate new loads and really start the app.
+ */
 var onLoadCallback = function() {
-  window.setTimeout(continueLoadingLibraries, 1);
+  window.setTimeout(leaderboards.continueLoadingLibraries, 1);
 };
 

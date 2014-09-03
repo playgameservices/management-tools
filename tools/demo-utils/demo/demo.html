@@ -66,7 +66,8 @@
         </paper-tabs>
       </div>
     </core-toolbar>
-    <div class="container" layout vertical center>
+    <div id="activeUI" style='display:none' class="container" layout vertical
+        center>
       <core-pages class="mainPages" selected="0">
 
         <div id='achievements' class='core-selected' active>
@@ -81,7 +82,7 @@
                   <div flex></div>
                   <div>
                     <paper-button raisedButton class="achieveButton"
-                       onClick="showAchievementList(null)"
+                       onClick="achievements.showAchievementList(null)"
                        label="Refresh achievements" ></paper-button>
                   </div>
                 </div>
@@ -101,7 +102,8 @@
                 </div>
                 <div style="padding-top: 10px;">
                   <paper-button raisedButton class="achieveButton"
-                      onClick="unlockAchievement()" label="Unlock"></paper-button>
+                      onClick="achievements.unlockAchievement()" label="Unlock">
+                  </paper-button>
                 </div>
               </div>
               <p>
@@ -118,7 +120,8 @@
                 </div>
                 <div style="padding-top: 10px;">
                   <paper-button raisedButton class="achieveButton"
-                      onClick="incrementAchievement()" label="Increment">
+                      onClick="achievements.incrementAchievement()"
+                      label="Increment">
                   </paper-button>
                 </div>
               </div>
@@ -131,7 +134,7 @@
                   </paper-input>
                 </div>
                 <div style="padding-top: 10px;">
-                  <paper-button raisedButton onClick="resetAchievement()"
+                  <paper-button raisedButton onClick="achievements.resetAchievement()"
                       class="achieveButton" label="reset"></paper-button>
                 </div>
               </div>
@@ -143,7 +146,8 @@
                 </div>
                   <p>
                 <div>
-                  <paper-button raisedButton onClick="resetAllAchievements()"
+                  <paper-button raisedButton
+                      onClick="achievements.resetAllAchievements()"
                       class="achieveButton" label="Reset All"></paper-button>
                 </div>
               </div>
@@ -164,7 +168,8 @@
                   <div>
                     <paper-button raisedButton class="leaderButton"
                        label="Refresh leaderboard list"
-                       onClick="showLeaderboardList(null)"></paper-button>
+                       onClick="leaderboards.showLeaderboardList(null)">
+                    </paper-button>
                   </div>
                 </div>
                 <div id="leaderboardListDiv"></div>
@@ -181,7 +186,7 @@
                   <div>
                     <paper-button raisedButton class="leaderButton"
                        label="Refresh high scores"
-                       onClick="showHighScoreList(null)">
+                       onClick="player.showHighScoreList(null)">
                     </paper-button>
                   </div>
                 </div>
@@ -191,7 +196,7 @@
                   <div>
                     <paper-button raisedButton class="leaderButton"
                        label="Refresh hidden players"
-                       onClick="showHiddenPlayers(null)">
+                       onClick="player.showHiddenPlayers(null)">
                     </paper-button>
                   </div>
                 </div>
@@ -207,7 +212,7 @@
                 </div>
                 <div style="padding-top: 10px;">
                   <paper-button raisedButton class="leaderButton"
-                      onClick="hidePlayer()">Hide</paper-button>
+                      onClick="player.hidePlayer()">Hide</paper-button>
                 </div>
               </div>
               <div horizontal layout class="miniForm">
@@ -219,7 +224,7 @@
                 </div>
                 <div style="padding-top: 10px;">
                   <paper-button raisedButton class="leaderButton"
-                      onClick="unhidePlayer()" label="Unhide"></paper-button>
+                      onClick="player.unhidePlayer()" label="Unhide"></paper-button>
                 </div>
               </div>
               <p>
@@ -235,7 +240,8 @@
                 </div>
                 <div style="padding-top: 10px;">
                 <paper-button raisedButton style="margin-left:10px; margin-top:10px" class="leaderButton"
-                    onClick="submitScore()" label="Submit"></paper-button>
+                    onClick="leaderboards.submitScore()" label="Submit">
+                </paper-button>
                 </div>
               </div>
               <div horizontal layout class="miniForm">
@@ -247,7 +253,7 @@
                 </div>
                 <div style="padding-top: 10px;">
                   <paper-button raisedButton class="leaderButton"
-                      onClick="resetLeaderboard()" label="Reset">
+                      onClick="leaderboards.resetLeaderboard()" label="Reset">
                   </paper-button>
                 </div>
               </div>
@@ -269,7 +275,7 @@
                   <div id="eventsBox" flex></div>
                   <div style="text-align:right;">
                     <paper-button raisedButton class="eqButton"
-                       onClick="updateEventsList()"
+                       onClick="events.updateEventsList()"
                        label="Refresh Events" ></paper-button>
                     <p>
                   </div>
@@ -281,7 +287,7 @@
                   <div id="questsBox" flex></div>
                   <div>
                     <paper-button raisedButton class="eqButton"
-                       onClick="updateQuestsList()"
+                       onClick="quests.updateQuestsList()"
                        label="Refresh Quests" ></paper-button>
                   </div>
                 </div>
@@ -297,15 +303,15 @@
                   <div style="text-align:right;">
                     <p>
                     <paper-button raisedButton class="eqButton"
-                       onClick="resetCurrentEvent()"
+                       onClick="events.resetCurrentEvent()"
                        label="Reset event for me" ></paper-button>
                     <p>
                     <paper-button raisedButton class="eqButton"
-                       onClick="resetAllEventsForMe()"
+                       onClick="events.resetAllEventsForMe()"
                        label="Reset all my events" ></paper-button>
                     <p>
                     <paper-button raisedButton class="eqButton"
-                       onClick="resetCurrentEventForAll()"
+                       onClick="events.resetCurrentEventForAll()"
                        label="Reset Event for All Players" ></paper-button>
                   </div>
                 </div>
@@ -334,11 +340,11 @@
                   <div style="text-align:right;">
                     <p>
                     <paper-button raisedButton class="snapButton"
-                       onClick="updateSnapshotList()"
+                       onClick="snapshots.updateSnapshotList()"
                        label="Refresh Snapshot List" ></paper-button>
                     <p>
                     <paper-button raisedButton class="snapButton"
-                       onClick="snapshot.peekCurrentSnapshot()"
+                       onClick="snapshots.peekCurrentSnapshot()"
                        label="Peek Selected" ></paper-button>
                   </div>
                 </div>
@@ -351,7 +357,7 @@
                   </div>
                   <div style="text-align:right;">
                     <paper-button raisedButton class="snapButton"
-                       onClick="pokeCurrentSnapshot()"
+                       onClick="snapshots.pokeCurrentSnapshot()"
                        label="Write Data" ></paper-button>
                   </div>
                 </div>
@@ -409,24 +415,26 @@
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
 <script type="text/javascript">
 
-/** Callback on signin check.
+/**
+ *  Callback on signin check.
  *  Signin check happens both on page load and when you click
  *  the actual signin button.
  */
 function signinCallback(authResult) {
-    if (authResult['access_token']) {
+    console.log(authResult);
+    if (authResult.access_token) {
+        achievements.initAchievements();
         // Successfully authorized
         // Hide the sign-in button now that the user is authorized, for example:
         document.getElementById('signinButton').style.display= 'none';
         document.getElementById('signoutButton').style.display =  'block';
         document.getElementById('disconnectButton').style.display =  'block';
-        init_achievements();
-    } else if (authResult['error']) {
+    } else if (authResult.error) {
         // There was an error.
         // Possible error codes:
         //   "access_denied" - User denied access to your app
         //   "immediate_failed" - Could not automatically log in the user
-        console.log('There was an error: ' + authResult['error']);
+        console.log('There was an error: ' + authResult.error);
 
         document.getElementById('signinButton').style.display= 'block';
         document.getElementById('signoutButton').style.display =  'none';
@@ -434,12 +442,34 @@ function signinCallback(authResult) {
   }
 }
 
+
+var activateUI = function() {
+  // Activate.
+  document.getElementById('activeUI').style.display = 'block';
+}
+
+
+var gapi = gapi || {};
+/**
+ * Loads the Google API clients and initializes the UI.
+ */
+var loadGoogleClients = function() {
+  gapi.client.load('gamesManagement', 'v1management', function(response) {
+    console.log('Games management loaded.');
+    gapi.client.load('games', 'v1', function(response) {
+      console.log('Games loaded.');
+      gapi.client.load('drive', 'v2', function(response) {
+        console.log('Drive loaded.');
+        activateUI();
+      }); }); });
+};
+
 /**
  * Async load of Google API client libraries and signin script.
  */
 (function() {
   var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-  po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
+  po.src = 'https://apis.google.com/js/client:plusone.js?onload=loadGoogleClients';
   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
 })();
 </script>

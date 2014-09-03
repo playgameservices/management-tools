@@ -5,7 +5,7 @@
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -13,14 +13,17 @@
  * limitations under the License.
  */
 
-// TODO (class) Use namespace and make state members internal.
 
-/** Creates list of players and, if available, scores
+
+var player = player || {};
+
+/**
+ * Creates list of players and, if available, scores
  * @param {Object} root the element you want to append this to.
  * @param {Array} items the list of players to show.
  * @param {boolean} showScore should I show the score column?
  */
-var createPlayerList = function(root, items, showScore) {
+player.createPlayerList = function(root, items, showScore) {
     if (!items){
       return;
     }
@@ -100,7 +103,7 @@ var createPlayerList = function(root, items, showScore) {
         button.setAttribute('name', 'edit');
         button.setAttribute('value', item.player.playerId);
         button.appendChild(document.createTextNode('Pick me!'));
-        button.addEventListener('click', sendPlayerDataToInputs, false);
+        button.addEventListener('click', player.sendPlayerDataToInputs, false);
         cell.appendChild(button);
         row.appendChild(cell);
 
@@ -116,7 +119,12 @@ var createPlayerList = function(root, items, showScore) {
 };
 
 
-function createPageButton(text, handler) {
+/**
+ * Creates a button on the page.
+ * @param {string} text The button text.
+ * @param {function} handler The function called when the button is clicked.
+ */
+player.createPageButton = function(text, handler) {
     var button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.setAttribute('name', 'edit');
@@ -127,9 +135,11 @@ function createPageButton(text, handler) {
 }
 
 
-/** Load the current top 25 high scores and render them.
- * @param {String} pageToken a REST API paging token string, or null. */
-function showHighScoreList(pageToken) {
+/**
+ * Load the current top 25 high scores and render them.
+ * @param {String} pageToken a REST API paging token string, or null.
+ */
+player.showHighScoreList = function(pageToken) {
     document.querySelector('#highScoreListDiv').innerHTML = '';
     document.querySelector('#highScoreListDiv').style.display = 'block';
     // Create the request.
@@ -148,29 +158,30 @@ function showHighScoreList(pageToken) {
                 return;
             }
             var root = document.getElementById('highScoreListDiv');
-            createPlayerList(root, response.items, true);
+            player.createPlayerList(root, response.items, true);
             if (response.prevPageToken) {
                 root.appendChild(
-                    createPageButton(
+                    player.createPageButton(
                         'Prev',
                         function(event) {
-                            showHighScoreList(response.prevPageToken);}));
+                            player.showHighScoreList(response.prevPageToken);}));
             }
             if (response.nextPageToken) {
                 root.appendChild(
-                    createPageButton(
+                    player.createPageButton(
                         'Next',
                         function(event) {
-                            showHighScoreList(response.nextPageToken);}));
+                            player.showHighScoreList(response.nextPageToken);}));
             }
         });
 }
 
 
-/** Load the current hidden players and render them.
+/**
+ * Loads the current hidden players and renders them.
  * @param {String} pageToken a REST API paging token string, or null.
  */
-function showHiddenPlayers(pageToken) {
+player.showHiddenPlayers = function(pageToken) {
     document.querySelector('#hiddenPlayersDiv').innerHTML = '';
     document.querySelector('#hiddenPlayersDiv').style.display = 'block';
     // Create the request.
@@ -183,32 +194,36 @@ function showHiddenPlayers(pageToken) {
             console.log('Hidden', response);
             var root = document.getElementById('hiddenPlayersDiv');
             if (response.items) {
-                createPlayerList(root, response.items, true);
+                player.createPlayerList(root, response.items, true);
             } else {
-                createPlayerList(root, [], true);
+                player.createPlayerList(root, [], true);
             }
             if (response.prevPageToken) {
                 root.appendChild(
-                    createPageButton(
+                    player.createPageButton(
                         'Prev',
                         function(event) {
-                            showHiddenPlayers(response.prevPageToken);}));
+                            player.showHiddenPlayers(response.prevPageToken);
+                            }));
             }
             if (response.nextPageToken) {
                 root.appendChild(
-                    createPageButton(
+                    player.createPageButton(
                         'Next',
                         function(event) {
-                            showHiddenPlayers(response.nextPageToken);}));
+                            player.showHiddenPlayers(response.nextPageToken);
+                            }));
             }
         });
 }
 
 
-/** Responds to "Pick me!"
+/**
+ * Responds to "Pick me!"
  * Fills in the textboxes at the bottom of the page with the user's ID
- * @param {Object} event the mouse event from clicking the button*  */
-var sendPlayerDataToInputs = function(event) {
+ * @param {Object} event the mouse event from clicking the button*
+ */
+player.sendPlayerDataToInputs = function(event) {
   console.log(event.target.value);
   document.getElementById('playerIdHideInput').value =
     event.target.value;
@@ -217,8 +232,10 @@ var sendPlayerDataToInputs = function(event) {
 };
 
 
-/** Use gamesManagement to hide a player */
-var hidePlayer = function() {
+/**
+ * Hides a player.
+ */
+player.hidePlayer = function() {
   var id = document.getElementById('playerIdHideInput').value;
 
   if (id == '') {
@@ -242,7 +259,10 @@ var hidePlayer = function() {
 };
 
 
-var unhidePlayer = function() {
+/**
+ * Unhides a player.
+ */
+player.unhidePlayer = function() {
   var id = document.getElementById('playerIdUnhideInput').value;
   if (id == '') {
     alert('You need to enter a valid player id.');
@@ -252,6 +272,7 @@ var unhidePlayer = function() {
     {applicationId: APP_ID,
      playerId: id}).execute(function(response) {
        console.log('Player hide:', response);
+       console.log('Player hide:', JSON.stringify(response));
        if (response.error != null) {
 
          if (response.error.code == '404') {
@@ -268,37 +289,5 @@ var unhidePlayer = function() {
          alert('Player is unhidden!  It may take up to 12 hours ' +
                'for this player to reappear.');
        }
-     });
-};
-
-
-/** We have to wait for two libraries to load, and then
- * signin to occur before it's safe to show the logged in UI. */
-function checkAllUnitsLoaded() {
-}
-
-
-/** Callback from loading client library.  You need a brief pause before
-    you initiate new loads and really start the app. */
-var onLoadCallback = function() {
-  window.setTimeout(continueLoadingLibraries, 1);
-};
-
-
-var continueLoadingLibraries = function() {
-    div = document.getElementById('errorDiv');
-    if (APP_ID == 'APP_ID') {
-        div.innerHTML = '<h3>Warning:  You have not yet set the APP_ID!</h3>';
-    } else {
-        div.innerHTML = '';
-    }
-    gapi.client.load('games', 'v1', function(response) {
-                         console.log('Games loaded.');
-                     });
-    gapi.client.load('gamesManagement', 'v1management', function(response) {
-                         console.log('Management loaded');
-                     });
-    gapi.client.load('drive', 'v2', function(response) {
-       console.log('Drive loaded.');
      });
 };

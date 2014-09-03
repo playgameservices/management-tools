@@ -5,24 +5,24 @@
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
+ *
  * Unless required by applicable law or agree to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TODO: remove this logic.
-// How many async loads have happened?
-var achievements = {};
 
-// TODO (class) Use namespace and make state members internal.
 
-/** Creates list of achievmeents
+
+var achievements = achievements || {};
+
+/**
+ * Creates list of achievmeents
  * @param {Object} root the element you want to append this to.
  * @param {Array} items the list of achievements
  */
-var createAchievementList = function(root, items) {
+achievements.createAchievementList = function(root, items) {
     console.log('Show achievements');
     var tab = document.createElement('table');
     tab.className = 'gridtable';
@@ -126,7 +126,8 @@ var createAchievementList = function(root, items) {
         button.setAttribute('name', 'edit');
         button.setAttribute('value', item.id);
         button.appendChild(document.createTextNode('Pick me!'));
-        button.addEventListener('click', sendAchievementDataToInputs, false);
+        button.addEventListener('click',
+            achievements.sendAchievementDataToInputs, false);
         cell.appendChild(button);
         row.appendChild(cell);
 
@@ -139,7 +140,13 @@ var createAchievementList = function(root, items) {
 };
 
 
-function createAchievementPageButton(text, handler) {
+/**
+ * Creates a button for the achievement page.
+ *
+ * @param {string} text The text for the button.
+ * @param {function} handler The function handler for the function.
+ */
+achievements.createAchievementPageButton = function(text, handler) {
     var button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.setAttribute('name', 'edit');
@@ -149,9 +156,12 @@ function createAchievementPageButton(text, handler) {
     return button;
 }
 
-/** Load the current top 25 high scores and render them.
- * @param {String} pageToken a REST API paging token string, or null. */
-function showAchievementList(pageToken) {
+
+/**
+ * Load the current top 25 high scores and render them.
+ * @param {String} pageToken a REST API paging token string, or null.
+ */
+achievements.showAchievementList = function(pageToken) {
     console.log('Paging token is ' + pageToken);
     document.getElementById('achievementListDiv').innerHTML = '';
     document.getElementById('achievementListDiv').style.display='block';
@@ -169,30 +179,34 @@ function showAchievementList(pageToken) {
                 return;
             }
             var root = document.getElementById('achievementListDiv');
-            createAchievementList(root, response.items, true);
+            achievements.createAchievementList(root, response.items, true);
 
             if (response.prevPageToken) {
                 root.appendChild(
-                    createAchievementPageButton(
+                    achievements.createAchievementPageButton(
                         'Prev',
                         function(event) {
-                            showAchievementList(response.prevPageToken);}));
+                            achievements.showAchievementList(
+                                response.prevPageToken);}));
             }
             if (response.nextPageToken) {
                 root.appendChild(
-                    createAchievementPageButton(
+                    achievements.createAchievementPageButton(
                         'Next',
                         function(event) {
-                            showAchievementList(response.nextPageToken);}));
+                            achievements.showAchievementList(
+                                response.nextPageToken);}));
             }
         });
 }
 
 
-/** Responds to "Pick me!"
+/**
+ * Responds to "Pick me!"
  * Fills in the textboxes at the bottom of the page with the user's ID
- * @param {Object} event the mouse event from clicking the button*  */
-var sendAchievementDataToInputs = function(event) {
+ * @param {Object} event the mouse event from clicking the button.
+ */
+achievements.sendAchievementDataToInputs = function(event) {
     console.log(event.target.value);
     document.getElementById('resetAchievementInput').value =
         event.target.value;
@@ -203,7 +217,10 @@ var sendAchievementDataToInputs = function(event) {
 };
 
 
-var unlockAchievement = function() {
+/**
+ * Unlocks an achievement.
+ */
+achievements.unlockAchievement = function() {
     var achievementId = document.getElementById(
         'unlockAchievementInput').value;
     console.log('Unlocking ' + achievementId);
@@ -227,7 +244,10 @@ var unlockAchievement = function() {
 };
 
 
-var incrementAchievement = function() {
+/**
+ * Increments an achievement.
+ */
+achievements.incrementAchievement = function() {
     var achievementId = document.getElementById(
         'stepsAchievementInput').value;
     var steps = document.getElementById(
@@ -254,8 +274,10 @@ var incrementAchievement = function() {
 };
 
 
-/** Use gamesManagement to reset an achievement */
-var resetAchievement = function() {
+/**
+ * Resets an achievement
+ */
+achievements.resetAchievement = function() {
     var achievementId = document.getElementById(
         'resetAchievementInput').value;
     console.log('Resetting ' + achievementId);
@@ -275,8 +297,10 @@ var resetAchievement = function() {
 };
 
 
-/** Use gamesManagement to reset an achievement */
-var resetAllAchievements = function() {
+/**
+ * Resets all achievements for a test account.
+ */
+achievements.resetAllAchievements = function() {
     gapi.client.gamesManagement.achievements.resetAll(
         {playerId: PLAYER_ID}).execute(
         function(response) {
@@ -292,13 +316,19 @@ var resetAllAchievements = function() {
 
 
 
-/** We have to wait for two libraries to load, and then
- * signin to occur before it's safe to show the logged in UI. */
-function checkAllUnitsLoaded() {
+/**
+ * We have to wait for two libraries to load, and then
+ * signin to occur before it's safe to show the logged in UI.
+ */
+achievements.checkAllUnitsLoaded = function() {
+  // TODO: Activate / deactivate components.
 }
 
 
-function init_achievements() {
+/**
+ * Initializes the achivements and related games details.
+ */
+achievements.initAchievements = function() {
   // Now that everything's loaded, we
   // grab the player Id and the list of achievements
   gapi.client.games.players.get({playerId: 'me'}).execute(
@@ -327,9 +357,10 @@ function init_achievements() {
       });
 }
 
-/** Callback from loading client library.  You need a brief pause before
-    you initiate new loads and really start the app. */
-var onLoadCallback = function() {
+/**
+ * Callback from loading client library.  You need a brief pause before
+ * you initiate new loads and really start the app.
+ */
+achievements.onLoadCallback = function() {
   window.setTimeout(continueLoadingLibraries, 1);
 };
-

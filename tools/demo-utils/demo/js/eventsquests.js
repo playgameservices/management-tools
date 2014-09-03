@@ -5,27 +5,26 @@
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
+ *
  * Unless required by applicable law or agree to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TODO: remove this logic.
-// How many async loads have happened?
-var events = {};
-var quests = {};
 
-// TODO (class) Use namespace and make state members internal.
+
+
+var events = events || {};
+var quests = quests || {};
 
 /**
  * Updates the list of available events.
  *
  * @param {?string} pageToken The next page token from the previous API call.
- * TODO (class) Move HTML generation into helper.
+ * TODO (class) Move HTML generation into helper / Polymer component.
  */
-var updateEventsList = function(pageToken) {
+events.updateEventsList = function(pageToken) {
   console.log("Update Events List");
   gapi.client.games.events.listDefinitions({maxResults: 10, pageToken: pageToken
       }).execute(
@@ -45,9 +44,9 @@ var updateEventsList = function(pageToken) {
         content  += '    <td>' + events[i].visibility+ '</td>\n';
         content  += '    <td style="text-align: center;" id="' +events[i].id +
             '"></td>\n';
-        content  += '    <td><button onclick="incrementEvent(\'' +
+        content  += '    <td><button onclick="events.incrementEvent(\'' +
             events[i].id + '\', 1);">trigger</button>\n';
-        content  += '    <button onclick="setCurrentEventId(\'' +
+        content  += '    <button onclick="events.setCurrentEventId(\'' +
             events[i].id + '\', 1);">pick</button></td>\n';
         content  += '  </tr>\n';
       }
@@ -55,7 +54,7 @@ var updateEventsList = function(pageToken) {
       content    += '</table>'
 
       if (response.nextPageToken){
-        content += '<paper-button onClick="updateEventsList(\'' +
+        content += '<paper-button onClick="events.updateEventsList(\'' +
             response.nextPageToken + '\')" label="next" class="eqButton"></paper-button>';
       }else{ console.log(response); }
       document.getElementById('eventsBox').innerHTML = content;
@@ -70,7 +69,7 @@ var updateEventsList = function(pageToken) {
  * @param {string} id The id of the event to increment.
  * @param {int} count The count you want to increment the event.
  */
-var incrementEvent = function(id, count) {
+events.incrementEvent = function(id, count) {
   mockTime = new Date().getTime();
   gapi.client.games.events.record(
   {
@@ -110,7 +109,7 @@ var incrementEvent = function(id, count) {
  * @param {?string} pageToken The next page token from the previous API call.
  * TODO (class) Clean up HTML generation into Polymer components.
  */
-var updateQuestsList = function (pageToken) {
+quests.updateQuestsList = function (pageToken) {
   gapi.client.games.quests.list({playerId:'me', maxResults:5,
       pageToken: pageToken}).execute(
     function(response){
@@ -123,10 +122,10 @@ var updateQuestsList = function (pageToken) {
         }
         content  += '<h3>' + quests[i].name + ' - ' + quests[i].description +
                     '</h3><paper-button label="accept" ' +
-                    'onClick="acceptQuest(\'' + quests[i].id +
+                    'onClick="quests.acceptQuest(\'' + quests[i].id +
                     '\')" class="eqButton"></paper-button> &nbsp;' +
                     '<paper-button label="Reset" class="eqButton" ' +
-                    'onClick="resetQuest(\'' + quests[i].id + '\')">' +
+                    'onClick="quests.resetQuest(\'' + quests[i].id + '\')">' +
                     '</paper-button>';
         var milestones = quests[i].milestones;
 
@@ -157,7 +156,7 @@ var updateQuestsList = function (pageToken) {
                 criteria[k].eventId + '" disabled></input></td>' +
                 '<td>' + currContribution + ' / ' + complContribution +
                 ' [' + initPlayerProgress + ']</td>';
-            content  += '<td><button onclick="setCurrentEventId(\'' +
+            content  += '<td><button onclick="events.setCurrentEventId(\'' +
                 criteria[k].eventId + '\')">Pick</button>\n</td></tr>';
           }
           content  += '</table>\n';
@@ -168,7 +167,7 @@ var updateQuestsList = function (pageToken) {
 
       if (response.nextPageToken){
         content += '<paper-button class="eqButton" label="Next" onClick="' +
-            'updateQuestsList(\'' + response.nextPageToken + '\')">' +
+            'quests.updateQuestsList(\'' + response.nextPageToken + '\')">' +
             '</paper-button>';
       }
 
@@ -182,7 +181,7 @@ var updateQuestsList = function (pageToken) {
  *
  * @param {string} questId The identifier for the quest to accept.
  */
-function acceptQuest(questId){
+quests.acceptQuest = function (questId) {
   gapi.client.games.quests.accept({questId: questId}).execute(function(resp){
     console.log('Accepted request response:');
     console.log(resp);
@@ -195,7 +194,7 @@ function acceptQuest(questId){
  *
  * @return {string} The current event ID.
  */
-var getCurrentEventId = function(){
+events.getCurrentEventId = function() {
   return document.getElementById('selectedEvent').value;
 }
 
@@ -205,7 +204,7 @@ var getCurrentEventId = function(){
  *
  * @param {string} id The event ID to set the current event to.
  */
-var setCurrentEventId = function(id){
+events.setCurrentEventId = function(id) {
   document.getElementById('selectedEvent').value = id;
 }
 
@@ -213,7 +212,7 @@ var setCurrentEventId = function(id){
 /**
  * Resets the currently populated event for the current user.
  */
-var resetQuest = function(questId){
+quests.resetQuest = function(questId) {
   gapi.client.gamesManagement.quests.reset({questId: questId}).execute(
       function(resp){
         console.log('A quest was reset.');
@@ -225,8 +224,8 @@ var resetQuest = function(questId){
 /**
  * Resets the currently populated event for the current user.
  */
-var resetCurrentEvent = function(){
-  var eventId = getCurrentEventId();
+events.resetCurrentEvent = function() {
+  var eventId = events.getCurrentEventId();
   gapi.client.gamesManagement.events.reset({eventId: eventId}).execute(
       function(resp){
         console.log('Current Event Reset');
@@ -238,7 +237,7 @@ var resetCurrentEvent = function(){
 /**
  * Resets all events for the currently authenticated user.
  */
-var resetAllEventsForMe = function() {
+events.resetAllEventsForMe = function() {
   console.log('Resetting all events for the current user.');
   gapi.client.gamesManagement.events.resetAll().execute(function(resp){
     console.log('Events reset, response:');
@@ -250,9 +249,9 @@ var resetAllEventsForMe = function() {
 /**
  * Resets the currently populated event for all users.
  */
-var resetCurrentEventForAll = function(){
+events.resetCurrentEventForAll = function() {
   console.log('Resetting current event for everybody.');
-  var eventId = getCurrentEventId();
+  var eventId = events.getCurrentEventId();
   gapi.client.gamesManagement.events.resetForAllPlayers({eventId: eventId}).
       execute(function(resp){
         console.log('Events reset, response:');
