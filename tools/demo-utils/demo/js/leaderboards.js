@@ -20,6 +20,7 @@ var leaderboards = {};
 
 
 /** Creates list of leaderboards with buttons to get scores
+ *
  * @param {Object} root the element you want to append this to.
  * @param {Array} leaderboards a list of leaderboards.
  */
@@ -128,6 +129,7 @@ leaderboards.createLeaderboardList = function(root, leaderboards) {
 
 /**
  * Creates visible list of scores
+ *
  * @param {Object} root the element you want to append this to.
  * @param {Array} scores a list of high scores.
  */
@@ -237,6 +239,7 @@ leaderboards.createPageButton = function(text, handler) {
 
 /**
  * Load a list of leaderboards and show it
+ *
  * @param {String} pageToken a REST API paging token string, or null.
  */
 leaderboards.showLeaderboardList = function(pageToken) {
@@ -282,6 +285,7 @@ leaderboards.showLeaderboardList = function(pageToken) {
 /**
  * Load the current set of scores.  No paging token, since you
  * can at most get three scores back (ALL_TIME, WEEKLY, DAILY)
+ *
  * @param {string} leaderboardId Leaderboard you wish to get scores for
  */
 leaderboards.showScoresList = function(leaderboardId) {
@@ -307,9 +311,9 @@ leaderboards.showScoresList = function(leaderboardId) {
 
 
 /**
- * Responds to "Get my scores!"
  * Fills in the textboxes at the bottom of the page with the right data
  * and loads the high score list.
+ *
  * @param {Object} event the mouse event from clicking the button*
  *
  * Note: This must be global.

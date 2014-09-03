@@ -20,6 +20,7 @@ var achievements = achievements || {};
 
 /**
  * Creates list of achievmeents
+ *
  * @param {Object} root the element you want to append this to.
  * @param {Array} items the list of achievements
  */
@@ -162,6 +163,7 @@ achievements.createAchievementPageButton = function(text, handler) {
 
 /**
  * Load the current top 25 high scores and render them.
+ *
  * @param {String} pageToken a REST API paging token string, or null.
  */
 achievements.showAchievementList = function(pageToken) {
@@ -205,8 +207,8 @@ achievements.showAchievementList = function(pageToken) {
 
 
 /**
- * Responds to "Pick me!"
  * Fills in the textboxes at the bottom of the page with the user's ID
+ *
  * @param {Object} event the mouse event from clicking the button.
  */
 achievements.sendAchievementDataToInputs = function(event) {
