@@ -18,110 +18,111 @@ var leaderboards = {};
 
 // TODO (class) Use namespace and make state members internal.
 
+
 /** Creates list of leaderboards with buttons to get scores
  * @param {Object} root the element you want to append this to.
  * @param {Array} leaderboards a list of leaderboards.
  */
 leaderboards.createLeaderboardList = function(root, leaderboards) {
 
-    if (!leaderboards) {
-        leaderboards = [];
-    }
+  if (!leaderboards) {
+    leaderboards = [];
+  }
 
-    console.log('Show leaderboards');
-    var tab = document.createElement('table');
-    tab.className = 'gridtable';
-    var row, cell;
+  console.log('Show leaderboards');
+  var tab = document.createElement('table');
+  tab.className = 'gridtable';
+  var row, cell;
 
-    // Make the header
+  // Make the header
+  row = document.createElement('tr');
+  cell = document.createElement('th');
+  cell.style.backgroundColor = '#e81d62';
+  cell.style.color = '#FFF';
+  cell.setAttribute('colSpan', '5');
+  row.appendChild(cell);
+  cell.appendChild(document.createTextNode(
+      'Total leaderboards on this page: ' +
+      leaderboards.length));
+  row.appendChild(cell);
+  tab.appendChild(row);
+
+  row = document.createElement('tr');
+  cell = document.createElement('th');
+  cell.appendChild(document.createTextNode('name'));
+  cell.style.backgroundColor = '#e81d62';
+  cell.style.color = '#FFF';
+  row.appendChild(cell);
+
+  cell = document.createElement('th');
+  cell.style.backgroundColor = '#e81d62';
+  cell.style.color = '#FFF';
+  cell.appendChild(document.createTextNode('id'));
+  row.appendChild(cell);
+
+  cell = document.createElement('th');
+  cell.style.backgroundColor = '#e81d62';
+  cell.style.color = '#FFF';
+  row.appendChild(cell);
+
+  cell = document.createElement('th');
+  cell.style.backgroundColor = '#e81d62';
+  cell.style.color = '#FFF';
+  cell.appendChild(document.createTextNode('order'));
+  row.appendChild(cell);
+
+  cell = document.createElement('th');
+  cell.style.backgroundColor = '#e81d62';
+  cell.style.color = '#FFF';
+  row.appendChild(cell);
+
+  tab.appendChild(row);
+
+  // Now actually parse the data.
+  for (var index in leaderboards) {
+    item = leaderboards[index];
     row = document.createElement('tr');
-    cell = document.createElement('th');
-    cell.style.backgroundColor = "#e81d62";
-    cell.style.color = "#FFF";
-    cell.setAttribute('colSpan','5');
-    row.appendChild(cell);
-    cell.appendChild(document.createTextNode(
-                         'Total leaderboards on this page: ' +
-                             leaderboards.length));
-    row.appendChild(cell);
-    tab.appendChild(row);
+    row.style.backgroundColor = index & 1 ? '#CCC' : '#FFF';
 
-    row = document.createElement('tr');
-    cell = document.createElement('th');
-    cell.appendChild(document.createTextNode('name'));
-    cell.style.backgroundColor = "#e81d62";
-    cell.style.color = "#FFF";
-    row.appendChild(cell);
-
-    cell = document.createElement('th');
-    cell.style.backgroundColor = "#e81d62";
-    cell.style.color = "#FFF";
-    cell.appendChild(document.createTextNode('id'));
-    row.appendChild(cell);
-
-    cell = document.createElement('th');
-    cell.style.backgroundColor = "#e81d62";
-    cell.style.color = "#FFF";
-    row.appendChild(cell);
-
-    cell = document.createElement('th');
-    cell.style.backgroundColor = "#e81d62";
-    cell.style.color = "#FFF";
-    cell.appendChild(document.createTextNode('order'));
-    row.appendChild(cell);
-
-    cell = document.createElement('th');
-    cell.style.backgroundColor = "#e81d62";
-    cell.style.color = "#FFF";
-    row.appendChild(cell);
-
-    tab.appendChild(row);
-
-    // Now actually parse the data.
-    for (var index in leaderboards) {
-        item = leaderboards[index];
-        row = document.createElement('tr');
-        row.style.backgroundColor = index & 1 ? "#CCC": "#FFF";
-
-        console.log('Name: ' + item.name +
+    console.log('Name: ' + item.name +
                     ', id:' + item.id +
                     ' ' + item.iconUrl);
-        cell = document.createElement('td');
-        cell.appendChild(document.createTextNode(item.name));
-        row.appendChild(cell);
+    cell = document.createElement('td');
+    cell.appendChild(document.createTextNode(item.name));
+    row.appendChild(cell);
 
-        cell = document.createElement('td');
-        cell.appendChild(document.createTextNode(item.id));
-        row.appendChild(cell);
+    cell = document.createElement('td');
+    cell.appendChild(document.createTextNode(item.id));
+    row.appendChild(cell);
 
-        cell = document.createElement('td');
+    cell = document.createElement('td');
 
-        var img = document.createElement('img');
-        img.setAttribute('src', item.iconUrl + '?sz=50');
-        img.setAttribute('height', '50px');
-        img.setAttribute('width', '50px');
-        cell.appendChild(img);
-        row.appendChild(cell);
+    var img = document.createElement('img');
+    img.setAttribute('src', item.iconUrl + '?sz=50');
+    img.setAttribute('height', '50px');
+    img.setAttribute('width', '50px');
+    cell.appendChild(img);
+    row.appendChild(cell);
 
-        cell = document.createElement('td');
-        cell.appendChild(document.createTextNode(item.order));
-        row.appendChild(cell);
+    cell = document.createElement('td');
+    cell.appendChild(document.createTextNode(item.order));
+    row.appendChild(cell);
 
-        // Need an active button
-        cell = document.createElement('td');
-        var button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.setAttribute('name', 'edit');
-        button.setAttribute('value', item.id);
-        button.appendChild(document.createTextNode('Get my scores!'));
-        button.addEventListener('click',
-            sendLeaderboardDataToInputs, false);
-        cell.appendChild(button);
-        row.appendChild(cell);
+    // Need an active button
+    cell = document.createElement('td');
+    var button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.setAttribute('name', 'edit');
+    button.setAttribute('value', item.id);
+    button.appendChild(document.createTextNode('Get my scores!'));
+    button.addEventListener('click',
+        sendLeaderboardDataToInputs, false);
+    cell.appendChild(button);
+    row.appendChild(cell);
 
-        tab.appendChild(row);
-    }
-    root.appendChild(tab);
+    tab.appendChild(row);
+  }
+  root.appendChild(tab);
 };
 
 
@@ -131,148 +132,151 @@ leaderboards.createLeaderboardList = function(root, leaderboards) {
  * @param {Array} scores a list of high scores.
  */
 leaderboards.createScoresList = function(root, scores) {
-    if (!scores) {
-        scores = [];
-    }
+  if (!scores) {
+    scores = [];
+  }
 
-    console.log('Show scores');
-    var tab = document.createElement('table');
-    tab.className = 'gridtable';
-    var row, cell;
+  console.log('Show scores');
+  var tab = document.createElement('table');
+  tab.className = 'gridtable';
+  var row, cell;
 
-    // Make the header
+  // Make the header
+  row = document.createElement('tr');
+  row.style.backgroundColor = '#e81d62';
+  row.style.color = '#FFF';
+  cell = document.createElement('th');
+  cell.setAttribute('colSpan', '4');
+  cell.appendChild(document.createTextNode(
+      'Total scores on this page: ' +
+      scores.length));
+  row.appendChild(cell);
+  tab.appendChild(row);
+
+  row = document.createElement('tr');
+  row.style.backgroundColor = '#e81d62';
+  row.style.color = '#FFF';
+  cell = document.createElement('th');
+  cell.appendChild(document.createTextNode('leaderboard_id'));
+  row.appendChild(cell);
+
+  cell = document.createElement('th');
+  cell.appendChild(document.createTextNode('scoreString'));
+  row.appendChild(cell);
+
+  cell = document.createElement('th');
+  cell.appendChild(document.createTextNode('public rank'));
+  row.appendChild(cell);
+
+  cell = document.createElement('th');
+  cell.appendChild(document.createTextNode('social rank'));
+  row.appendChild(cell);
+
+  tab.appendChild(row);
+
+  // Now actually parse the data.
+  for (var index in scores) {
+    item = scores[index];
     row = document.createElement('tr');
-    row.style.backgroundColor = "#e81d62";
-    row.style.color = "#FFF";
-    cell = document.createElement('th');
-    cell.setAttribute('colSpan','4');
-    cell.appendChild(document.createTextNode(
-                         'Total scores on this page: ' +
-                             scores.length));
-    row.appendChild(cell);
-    tab.appendChild(row);
+    row.style.backgroundColor = index & 1 ? '#CCC' : '#FFF';
 
-    row = document.createElement('tr');
-    row.style.backgroundColor = "#e81d62";
-    row.style.color = "#FFF";
-    cell = document.createElement('th');
-    cell.appendChild(document.createTextNode('leaderboard_id'));
+    cell = document.createElement('td');
+    cell.appendChild(document.createTextNode(item.leaderboard_id));
     row.appendChild(cell);
 
-    cell = document.createElement('th');
-    cell.appendChild(document.createTextNode('scoreString'));
+    cell = document.createElement('td');
+    cell.appendChild(document.createTextNode(item.scoreString));
     row.appendChild(cell);
 
-    cell = document.createElement('th');
-    cell.appendChild(document.createTextNode('public rank'));
-    row.appendChild(cell);
-
-    cell = document.createElement('th');
-    cell.appendChild(document.createTextNode('social rank'));
-    row.appendChild(cell);
-
-    tab.appendChild(row);
-
-    // Now actually parse the data.
-    for (var index in scores) {
-        item = scores[index];
-        row = document.createElement('tr');
-        row.style.backgroundColor = index & 1 ? "#CCC": "#FFF";
-
-        cell = document.createElement('td');
-        cell.appendChild(document.createTextNode(item.leaderboard_id));
-        row.appendChild(cell);
-
-        cell = document.createElement('td');
-        cell.appendChild(document.createTextNode(item.scoreString));
-        row.appendChild(cell);
-
-        cell = document.createElement('td');
-        if (item.publicRank) {
-            cell.appendChild(document.createTextNode(
-                                 item.publicRank.formattedRank +
-                                     '/' + item.publicRank.formattedNumScores));
-        } else {
-            cell.appendChild(document.createTextNode(
-                                 'No public rank'));
-        }
-        row.appendChild(cell);
-
-        cell = document.createElement('td');
-        if (item.socialRank) {
-            cell.appendChild(document.createTextNode(
-                                 item.socialRank.formattedRank +
-                                     '/' + item.socialRank.formattedNumScores));
-        } else {
-            cell.appendChild(document.createTextNode(
-                                 'No social rank'));
-        }
-        row.appendChild(cell);
-
-        tab.appendChild(row);
+    cell = document.createElement('td');
+    if (item.publicRank) {
+      cell.appendChild(document.createTextNode(
+          item.publicRank.formattedRank +
+          '/' + item.publicRank.formattedNumScores));
+    } else {
+      cell.appendChild(document.createTextNode(
+          'No public rank'));
     }
-    root.appendChild(tab);
+    row.appendChild(cell);
+
+    cell = document.createElement('td');
+    if (item.socialRank) {
+      cell.appendChild(document.createTextNode(
+          item.socialRank.formattedRank +
+          '/' + item.socialRank.formattedNumScores));
+    } else {
+      cell.appendChild(document.createTextNode(
+          'No social rank'));
+    }
+    row.appendChild(cell);
+
+    tab.appendChild(row);
+  }
+  root.appendChild(tab);
 };
 
 
 /**
  * Creates the page button for leaderboards.
+ *
  * @param {string} text The button title.
  * @param {function} handler The function called when the button is clicked.
+ * @return {Object} The button that was created.
  */
 leaderboards.createPageButton = function(text, handler) {
-    var button = document.createElement('button');
-    button.setAttribute('type', 'button');
-    button.setAttribute('name', 'edit');
-    button.setAttribute('value', item.player.playerId);
-    button.appendChild(document.createTextNode(text));
-    button.addEventListener('click', handler, false);
+  var button = document.createElement('button');
+  button.setAttribute('type', 'button');
+  button.setAttribute('name', 'edit');
+  button.setAttribute('value', item.player.playerId);
+  button.appendChild(document.createTextNode(text));
+  button.addEventListener('click', handler, false);
 
-    return button;
-}
+  return button;
+};
+
 
 /**
  * Load a list of leaderboards and show it
  * @param {String} pageToken a REST API paging token string, or null.
  */
 leaderboards.showLeaderboardList = function(pageToken) {
-    document.querySelector('#leaderboardListDiv').innerHTML = '';
-    document.querySelector('#leaderboardListDiv').style.display = 'block';
+  document.querySelector('#leaderboardListDiv').innerHTML = '';
+  document.querySelector('#leaderboardListDiv').style.display = 'block';
 
-    // Create the request.
-    var request = gapi.client.games.leaderboards.list(
-        { pageToken: pageToken,
-         maxResults: '10'});
+  // Create the request.
+  var request = gapi.client.games.leaderboards.list(
+      { pageToken: pageToken,
+        maxResults: '10'});
 
-    request.execute(
-        function(response) {
-            console.log('High score', response);
-            if (response.error) {
-                alert('Error ' + response.error.code + ': ' + response.message);
-                return;
-            }
+  request.execute(
+      function(response) {
+        console.log('High score', response);
+        if (response.error) {
+          alert('Error ' + response.error.code + ': ' + response.message);
+          return;
+        }
 
-            var root = document.getElementById('leaderboardListDiv');
-            leaderboards.createLeaderboardList(root, response.items);
+        var root = document.getElementById('leaderboardListDiv');
+        leaderboards.createLeaderboardList(root, response.items);
 
-            if (response.prevPageToken) {
-                root.appendChild(
-                    leaderboards.createPageButton(
-                        'Prev',
-                        function(event) {
+        if (response.prevPageToken) {
+          root.appendChild(
+              leaderboards.createPageButton(
+              'Prev',
+              function(event) {
                             player.showHighScoreList(response.prevPageToken);
-                            }));
-            }
-            if (response.nextPageToken) {
-                root.appendChild(
-                    leaderboards.createPageButton(
-                        'Next',
-                        function(event) {
+              }));
+        }
+        if (response.nextPageToken) {
+          root.appendChild(
+              leaderboards.createPageButton(
+              'Next',
+              function(event) {
                             player.showHighScoreList(response.nextPageToken);
-                            }));
-            }
-        });
-}
+              }));
+        }
+      });
+};
 
 
 /**
@@ -281,25 +285,25 @@ leaderboards.showLeaderboardList = function(pageToken) {
  * @param {string} leaderboardId Leaderboard you wish to get scores for
  */
 leaderboards.showScoresList = function(leaderboardId) {
-    document.querySelector('#scoresListDiv').innerHTML = '';
-    document.querySelector('#scoresListDiv').style.display = 'block';
-    // Create the request.
-    var request = gapi.client.games.scores.get(
-        { timeSpan: 'ALL',
-          playerId: 'me',
-          includeRankType: 'ALL',
-          leaderboardId: leaderboardId});
-    request.execute(
-        function(response) {
-            console.log('Get scores', response);
-            if (response.error) {
-                alert('Error ' + response.error.code + ': ' + response.message);
-                return;
-            }
-            var root = document.getElementById('scoresListDiv');
-            leaderboards.createScoresList(root, response.items);
-        });
-}
+  document.querySelector('#scoresListDiv').innerHTML = '';
+  document.querySelector('#scoresListDiv').style.display = 'block';
+  // Create the request.
+  var request = gapi.client.games.scores.get(
+      { timeSpan: 'ALL',
+        playerId: 'me',
+        includeRankType: 'ALL',
+        leaderboardId: leaderboardId});
+  request.execute(
+      function(response) {
+        console.log('Get scores', response);
+        if (response.error) {
+          alert('Error ' + response.error.code + ': ' + response.message);
+          return;
+        }
+        var root = document.getElementById('scoresListDiv');
+        leaderboards.createScoresList(root, response.items);
+      });
+};
 
 
 /**
@@ -311,45 +315,45 @@ leaderboards.showScoresList = function(leaderboardId) {
  * Note: This must be global.
  */
 sendLeaderboardDataToInputs = function(event) {
-    console.log(event.target.value);
-    document.getElementById('leaderboardIdInput').value =
-        event.target.value;
-    document.getElementById('leaderboardIdShowHS').value =
-        event.target.value;
-    document.getElementById('leaderboardResetIdInput').value =
-        event.target.value;
-    leaderboards.showScoresList(event.target.value);
+  console.log(event.target.value);
+  document.getElementById('leaderboardIdInput').value =
+      event.target.value;
+  document.getElementById('leaderboardIdShowHS').value =
+      event.target.value;
+  document.getElementById('leaderboardResetIdInput').value =
+      event.target.value;
+  leaderboards.showScoresList(event.target.value);
 };
 
 
 /** Submit a high score */
 leaderboards.submitScore = function() {
-    var id = document.getElementById('leaderboardResetIdInput').value;
-    if (id == '') {
-        alert('You need to enter a valid leaderboard id.');
-        return;
-    }
-    var score = document.getElementById('playerScoreInput').value;
-    if (score == '') {
-        alert('You need to enter a valid score to submit.');
-        return;
-    }
-    console.log('Submitting score' + score);
-    gapi.client.games.scores.submit(
-        {leaderboardId: id,
-         score: score}).execute(
-             function(response) {
-                 console.log('Submit score:', response);
-                 if (response.error != null) {
-                     alert('Error submitting score: ' +
-                           response.error.code + ': ' + response.error.message);
-                 }
-                 else
-                 {
-                     alert('Score submitted! Get your scores again to see ' +
-                           'the difference.');
-                 }
-             });
+  var id = document.getElementById('leaderboardResetIdInput').value;
+  if (id == '') {
+    alert('You need to enter a valid leaderboard id.');
+    return;
+  }
+  var score = document.getElementById('playerScoreInput').value;
+  if (score == '') {
+    alert('You need to enter a valid score to submit.');
+    return;
+  }
+  console.log('Submitting score' + score);
+  gapi.client.games.scores.submit(
+      {leaderboardId: id,
+        score: score}).execute(
+      function(response) {
+        console.log('Submit score:', response);
+        if (response.error != null) {
+          alert('Error submitting score: ' +
+              response.error.code + ': ' + response.error.message);
+        }
+        else
+        {
+          alert('Score submitted! Get your scores again to see ' +
+              'the difference.');
+        }
+      });
 };
 
 
@@ -363,19 +367,19 @@ leaderboards.resetLeaderboard = function() {
     return;
   }
   gapi.client.gamesManagement.scores.reset(
-    {leaderboardId: id}).execute(
-        function(response) {
-            console.log('leaderboard reset:', response);
-            if (response.error != null) {
-                alert('Error resetting leaderboard: ' +
-                      response.error.code + ': ' + response.error.message);
-            }
-            else
-            {
-                alert('Leaderboard reset!  Get your scores again ' +
-                      'to see the effect.');
-            }
-     });
+      {leaderboardId: id}).execute(
+      function(response) {
+        console.log('leaderboard reset:', response);
+        if (response.error != null) {
+          alert('Error resetting leaderboard: ' +
+              response.error.code + ': ' + response.error.message);
+        }
+        else
+        {
+          alert('Leaderboard reset!  Get your scores again ' +
+              'to see the effect.');
+        }
+      });
 };
 
 
@@ -384,7 +388,7 @@ leaderboards.resetLeaderboard = function() {
  * signin to occur before it's safe to show the logged in UI.
  */
 leaderboards.checkAllUnitsLoaded = function() {
-}
+};
 
 
 /**

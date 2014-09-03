@@ -18,6 +18,7 @@
 var events = events || {};
 var quests = quests || {};
 
+
 /**
  * Updates the list of available events.
  *
@@ -25,40 +26,41 @@ var quests = quests || {};
  * TODO (class) Move HTML generation into helper / Polymer component.
  */
 events.updateEventsList = function(pageToken) {
-  console.log("Update Events List");
+  console.log('Update Events List');
   gapi.client.games.events.listDefinitions({maxResults: 10, pageToken: pageToken
-      }).execute(
-    function(response){
-      var content = '<table cellpadding=2 cellspacing=0 border=0>\n';
-      content    += '  <tr style="color:#fff; background:#9F499B;">\n';
-      content    += '    <th>Event Name</th><th>ID</th><th>Visibility</th>' +
-          '<th>Count</th><th>Increment</th>\n';
-      content    += '  </tr>\n';
+  }).execute(
+      function(response) {
+        var content = '<table cellpadding=2 cellspacing=0 border=0>\n';
+        content += '  <tr style="color:#fff; background:#9F499B;">\n';
+        content += '    <th>Event Name</th><th>ID</th><th>Visibility</th>' +
+            '<th>Count</th><th>Increment</th>\n';
+        content += '  </tr>\n';
 
-      var events = response.items;
-      for (var i=0; i < events.length; i++){
-        content  += '  <tr style="background:#fff;">\n';
-        content  += '    <td>' + events[i].displayName + '</td>';
-        content  += '    <td><input size=25 type=text value=' +
-            events[i].id + ' disabled></td>';
-        content  += '    <td>' + events[i].visibility+ '</td>\n';
-        content  += '    <td style="text-align: center;" id="' +events[i].id +
-            '"></td>\n';
-        content  += '    <td><button onclick="events.incrementEvent(\'' +
-            events[i].id + '\', 1);">trigger</button>\n';
-        content  += '    <button onclick="events.setCurrentEventId(\'' +
-            events[i].id + '\', 1);">pick</button></td>\n';
-        content  += '  </tr>\n';
+        var events = response.items;
+        for (var i = 0; i < events.length; i++) {
+          content += '  <tr style="background:#fff;">\n';
+          content += '    <td>' + events[i].displayName + '</td>';
+          content += '    <td><input size=25 type=text value=' +
+              events[i].id + ' disabled></td>';
+          content += '    <td>' + events[i].visibility + '</td>\n';
+          content += '    <td style="text-align: center;" id="' + events[i].id +
+              '"></td>\n';
+          content += '    <td><button onclick="events.incrementEvent(\'' +
+              events[i].id + '\', 1);">trigger</button>\n';
+          content += '    <button onclick="events.setCurrentEventId(\'' +
+              events[i].id + '\', 1);">pick</button></td>\n';
+          content += '  </tr>\n';
+        }
+
+        content += '</table>';
+
+        if (response.nextPageToken) {
+          content += '<paper-button onClick="events.updateEventsList(\'' +
+              response.nextPageToken +
+              '\')" label="next" class="eqButton"></paper-button>';
+        }else { console.log(response); }
+        document.getElementById('eventsBox').innerHTML = content;
       }
-
-      content    += '</table>'
-
-      if (response.nextPageToken){
-        content += '<paper-button onClick="events.updateEventsList(\'' +
-            response.nextPageToken + '\')" label="next" class="eqButton"></paper-button>';
-      }else{ console.log(response); }
-      document.getElementById('eventsBox').innerHTML = content;
-    }
   );
 };
 
@@ -72,30 +74,30 @@ events.updateEventsList = function(pageToken) {
 events.incrementEvent = function(id, count) {
   mockTime = new Date().getTime();
   gapi.client.games.events.record(
-  {
-    "kind": "games#eventRecordRequest",
-    "requestId": mockTime,
-    "currentTimeMillis": mockTime,
-    "timePeriods": [
       {
-        "kind": "games#eventPeriodUpdate",
-        "timePeriod": {
-          "kind": "games#eventPeriodRange",
-          "periodStartMillis": mockTime - 100000,
-          "periodEndMillis": mockTime - 100
-        },
-        "updates": [
+        'kind': 'games#eventRecordRequest',
+        'requestId': mockTime,
+        'currentTimeMillis': mockTime,
+        'timePeriods': [
           {
-            "kind": "games#eventUpdateRequest",
-            "definitionId": id,
-            "updateCount": 1
+            'kind': 'games#eventPeriodUpdate',
+            'timePeriod': {
+              'kind': 'games#eventPeriodRange',
+              'periodStartMillis': mockTime - 100000,
+              'periodEndMillis': mockTime - 100
+            },
+            'updates': [
+              {
+                'kind': 'games#eventUpdateRequest',
+                'definitionId': id,
+                'updateCount': 1
+              }
+            ]
           }
         ]
-      }
-    ]
-  }).execute(function(resp){
+      }).execute(function(resp) {
     var events = resp.playerEvents;
-    for (var i=0; i< events.length; i++){
+    for (var i = 0; i < events.length; i++) {
       document.getElementById(events[i].definitionId).innerText =
           events[i].formattedNumEvents;
     }
@@ -109,84 +111,85 @@ events.incrementEvent = function(id, count) {
  * @param {?string} pageToken The next page token from the previous API call.
  * TODO (class) Clean up HTML generation into Polymer components.
  */
-quests.updateQuestsList = function (pageToken) {
-  gapi.client.games.quests.list({playerId:'me', maxResults:5,
-      pageToken: pageToken}).execute(
-    function(response){
-      var content = '';
-      var quests = response.items;
-      if (!quests) return;
-      for (var i=0; i < quests.length; i++){
-        if (i > 0) {
-          content += '<hr>';
-        }
-        content  += '<h3>' + quests[i].name + ' - ' + quests[i].description +
-                    '</h3><paper-button label="accept" ' +
-                    'onClick="quests.acceptQuest(\'' + quests[i].id +
-                    '\')" class="eqButton"></paper-button> &nbsp;' +
-                    '<paper-button label="Reset" class="eqButton" ' +
-                    'onClick="quests.resetQuest(\'' + quests[i].id + '\')">' +
-                    '</paper-button>';
-        var milestones = quests[i].milestones;
-
-        content    += '<table cellpadding=0 cellspacing=0 border=0>\n';
-        content    += '  <tr style="color:#fff; background:#9F499B;">\n';
-        content    += '    <th>MileStoneId</th><th>Critera</th>';
-        content    += '  </tr>\n';
-
-        for (var j=0; j < milestones.length; j++){
-          content  += '  <tr style="background:#fff;">\n';
-          content  += '    <td>' + milestones[j].id + '</td>\n';
-          content  += '    <td>\n';
-
-          var criteria = milestones[j].criteria;
-
-          content  += '<table>\n';
-          content  += '<tr><th>Event</th><th>Contribution</th><th>Select</th>' +
-              '</tr>';
-          for (var k=0; k < criteria.length; k++){
-            var currContribution = criteria[k].currentContribution ?
-              criteria[k].currentContribution.formattedValue : 'n/a';
-            var complContribution = criteria[k].completionContribution ?
-              criteria[k].completionContribution.formattedValue : 'n/a';
-            var initPlayerProgress = criteria[k].initialPlayerProgress ?
-              criteria[k].initialPlayerProgress.formattedValue : 'n/a';
-
-            content += '<tr><td>' + '<input size=42 type=text value="' +
-                criteria[k].eventId + '" disabled></input></td>' +
-                '<td>' + currContribution + ' / ' + complContribution +
-                ' [' + initPlayerProgress + ']</td>';
-            content  += '<td><button onclick="events.setCurrentEventId(\'' +
-                criteria[k].eventId + '\')">Pick</button>\n</td></tr>';
+quests.updateQuestsList = function(pageToken) {
+  gapi.client.games.quests.list({playerId: 'me', maxResults: 5,
+    pageToken: pageToken}).execute(
+      function(response) {
+        var content = '';
+        var quests = response.items;
+        if (!quests) return;
+        for (var i = 0; i < quests.length; i++) {
+          if (i > 0) {
+            content += '<hr>';
           }
-          content  += '</table>\n';
-          content  += '    </td>';
+          content += '<h3>' + quests[i].name + ' - ' + quests[i].description +
+              '</h3><paper-button label="accept" ' +
+              'onClick="quests.acceptQuest(\'' + quests[i].id +
+              '\')" class="eqButton"></paper-button> &nbsp;' +
+              '<paper-button label="Reset" class="eqButton" ' +
+              'onClick="quests.resetQuest(\'' + quests[i].id + '\')">' +
+              '</paper-button>';
+          var milestones = quests[i].milestones;
+
+          content += '<table cellpadding=0 cellspacing=0 border=0>\n';
+          content += '  <tr style="color:#fff; background:#9F499B;">\n';
+          content += '    <th>MileStoneId</th><th>Critera</th>';
+          content += '  </tr>\n';
+
+          for (var j = 0; j < milestones.length; j++) {
+            content += '  <tr style="background:#fff;">\n';
+            content += '    <td>' + milestones[j].id + '</td>\n';
+            content += '    <td>\n';
+
+            var criteria = milestones[j].criteria;
+
+            content += '<table>\n';
+            content += '<tr><th>Event</th><th>Contribution</th><th>Select' +
+                '</th>' + '</tr>';
+            for (var k = 0; k < criteria.length; k++) {
+              var currContribution = criteria[k].currentContribution ?
+                  criteria[k].currentContribution.formattedValue : 'n/a';
+              var complContribution = criteria[k].completionContribution ?
+                  criteria[k].completionContribution.formattedValue : 'n/a';
+              var initPlayerProgress = criteria[k].initialPlayerProgress ?
+                  criteria[k].initialPlayerProgress.formattedValue : 'n/a';
+
+              content += '<tr><td>' + '<input size=42 type=text value="' +
+                  criteria[k].eventId + '" disabled></input></td>' +
+                  '<td>' + currContribution + ' / ' + complContribution +
+                  ' [' + initPlayerProgress + ']</td>';
+              content += '<td><button onclick="events.setCurrentEventId(\'' +
+                  criteria[k].eventId + '\')">Pick</button>\n</td></tr>';
+            }
+            content += '</table>\n';
+            content += '    </td>';
+          }
+          content += '</table>\n';
         }
-        content    += '</table>\n';
-      }
 
-      if (response.nextPageToken){
-        content += '<paper-button class="eqButton" label="Next" onClick="' +
-            'quests.updateQuestsList(\'' + response.nextPageToken + '\')">' +
-            '</paper-button>';
-      }
+        if (response.nextPageToken) {
+          content += '<paper-button class="eqButton" label="Next" onClick="' +
+              'quests.updateQuestsList(\'' + response.nextPageToken + '\')">' +
+              '</paper-button>';
+        }
 
-      document.getElementById('questsBox').innerHTML = content;
-    }
+        document.getElementById('questsBox').innerHTML = content;
+      }
   );
-}
+};
+
 
 /**
  * Accepts a quest, opening it up to be contributed towards.
  *
  * @param {string} questId The identifier for the quest to accept.
  */
-quests.acceptQuest = function (questId) {
-  gapi.client.games.quests.accept({questId: questId}).execute(function(resp){
+quests.acceptQuest = function(questId) {
+  gapi.client.games.quests.accept({questId: questId}).execute(function(resp) {
     console.log('Accepted request response:');
     console.log(resp);
   });
-}
+};
 
 
 /**
@@ -196,7 +199,7 @@ quests.acceptQuest = function (questId) {
  */
 events.getCurrentEventId = function() {
   return document.getElementById('selectedEvent').value;
-}
+};
 
 
 /**
@@ -206,19 +209,21 @@ events.getCurrentEventId = function() {
  */
 events.setCurrentEventId = function(id) {
   document.getElementById('selectedEvent').value = id;
-}
+};
 
 
 /**
  * Resets the currently populated event for the current user.
+ *
+ * @param {string} questId The identifier for the quest to reset.
  */
 quests.resetQuest = function(questId) {
   gapi.client.gamesManagement.quests.reset({questId: questId}).execute(
-      function(resp){
+      function(resp) {
         console.log('A quest was reset.');
         console.log(resp);
       });
-}
+};
 
 
 /**
@@ -227,11 +232,11 @@ quests.resetQuest = function(questId) {
 events.resetCurrentEvent = function() {
   var eventId = events.getCurrentEventId();
   gapi.client.gamesManagement.events.reset({eventId: eventId}).execute(
-      function(resp){
+      function(resp) {
         console.log('Current Event Reset');
         console.log(resp);
       });
-}
+};
 
 
 /**
@@ -239,11 +244,11 @@ events.resetCurrentEvent = function() {
  */
 events.resetAllEventsForMe = function() {
   console.log('Resetting all events for the current user.');
-  gapi.client.gamesManagement.events.resetAll().execute(function(resp){
+  gapi.client.gamesManagement.events.resetAll().execute(function(resp) {
     console.log('Events reset, response:');
     console.log(resp);
   });
-}
+};
 
 
 /**
@@ -253,8 +258,8 @@ events.resetCurrentEventForAll = function() {
   console.log('Resetting current event for everybody.');
   var eventId = events.getCurrentEventId();
   gapi.client.gamesManagement.events.resetForAllPlayers({eventId: eventId}).
-      execute(function(resp){
+      execute(function(resp) {
         console.log('Events reset, response:');
         console.log(resp);
       });
-}
+};

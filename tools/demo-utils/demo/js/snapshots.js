@@ -20,23 +20,29 @@ var drive = drive || {};
 var currSnapshotIds = [];
 var writtenData;
 
+
+/** A cached snapshot metadata object. */
 snapshots.lastSnapshot = {};
 
+
+/** The path used to host public files on drive. */
 drive.DRIVE_HOST_PATH = 'https://googledrive.com/host/';
-drive.HOST_FOLDER = "snapshotImages";
-// TODO (class) Use namespace and make state members internal.
+
+
+/** A constant for the host folder name used for this game's snapshots. */
+drive.HOST_FOLDER = 'snapshotImages';
 
 
 /**
  * List snapshots for the current user.
  */
-snapshots.updateSnapshotList = function (){
-  var callback = function (resp){
+snapshots.updateSnapshotList = function() {
+  var callback = function(resp) {
     console.log(resp);
     var content = '<form>';
-    if (resp.items){
+    if (resp.items) {
       currSnapshotIds = [];
-      for (var i = 0; i < resp.items.length; i++){
+      for (var i = 0; i < resp.items.length; i++) {
         currSnapshotIds[currSnapshotIds.length] = resp.items[i].id;
         content += '<paper-radio-button toggles="true" id="' +
             resp.items[i].id + '" ' +
@@ -52,7 +58,7 @@ snapshots.updateSnapshotList = function (){
   };
 
   snapshots.listSnapshots('me', callback);
-}
+};
 
 
 /**
@@ -60,14 +66,14 @@ snapshots.updateSnapshotList = function (){
  *
  * @param {string} id The element ID for the selected button.
  */
-snapshots.toggleSnapshot = function (id){
-  for (var i=0; i < currSnapshotIds.length; i++){
-    if (currSnapshotIds[i] != id){
+snapshots.toggleSnapshot = function(id) {
+  for (var i = 0; i < currSnapshotIds.length; i++) {
+    if (currSnapshotIds[i] != id) {
       document.getElementById(currSnapshotIds[i]).checked = false;
     }
   }
   document.getElementById('selectedSnapshot').value = id;
-}
+};
 
 
 /**
@@ -77,31 +83,31 @@ snapshots.toggleSnapshot = function (id){
  * @param {string} playerId The identifier for the player to get snapshots for.
  * @param {function} callback The function to pass the result data to.
  */
-snapshots.listSnapshots = function (playerId, callback) {
-  if (!playerId){
+snapshots.listSnapshots = function(playerId, callback) {
+  if (!playerId) {
     playerId = 'me';
   }
-  if (!callback){
-    callback = function(resp){
+  if (!callback) {
+    callback = function(resp) {
       console.log(resp);
-    }
+    };
   }
-  gapi.client.games.snapshots.list({playerId: 'me'}).execute(callback)
-}
+  gapi.client.games.snapshots.list({playerId: 'me'}).execute(callback);
+};
 
 
 /**
  * Retrieves the snapshot data for the snapshot id in the input field.
  */
-snapshots.peekCurrentSnapshot = function(){
+snapshots.peekCurrentSnapshot = function() {
   var snapshotId = document.getElementById('selectedSnapshot').value;
   console.log('Loading data for ' + snapshotId);
   gapi.client.games.snapshots.get({snapshotId: snapshotId}).execute(
-    function(resp){
-      console.log(resp);
-      lastSnapshot = resp;
-      snapshots.peekSnapshotData(resp.driveId);
-    }
+      function(resp) {
+        console.log(resp);
+        lastSnapshot = resp;
+        snapshots.peekSnapshotData(resp.driveId);
+      }
   );
 };
 
@@ -109,52 +115,52 @@ snapshots.peekCurrentSnapshot = function(){
 /**
  * Looks at snapshot data.
  *
- * @param {string} snapshotId The identifier for the snapshot to peek at.
+ * @param {string} driveId The Drive identifier for the snapshot to peek at.
  */
-snapshots.peekSnapshotData = function (driveId) {
-  var callback = function(resp){
+snapshots.peekSnapshotData = function(driveId) {
+  var callback = function(resp) {
     document.getElementById('snapshotEditArea').innerHTML =
-      '<h3>Raw Snapshot Metadata</h3><br>' +
-      '<textarea style="width:600px; height: 800px;">' +
-      JSON.stringify(resp.result, undefined, 2) + '</textarea><hr>';
+        '<h3>Raw Snapshot Metadata</h3><br>' +
+        '<textarea style="width:600px; height: 800px;">' +
+        JSON.stringify(resp.result, undefined, 2) + '</textarea><hr>';
     snapshots.lastSnapshot = resp;
 
     var innerCallback = function(ss) {
       document.getElementById('snapshotEditArea').innerHTML +=
-        '<h3>Raw Snapshot Data</h3><br>' +
-        '<textarea id="ssRawData" style="width: 600px; height 400px;">' +
-        ss + '</textarea>';
-    }
+          '<h3>Raw Snapshot Data</h3><br>' +
+          '<textarea id="ssRawData" style="width: 600px; height 400px;">' +
+          ss + '</textarea>';
+    };
     snapshots.downloadFile(resp, innerCallback);
   };
 
   gapi.client.drive.files.get({fileId: driveId}).execute(
-    function(ss){
-      callback(ss);
-    });
+      function(ss) {
+        callback(ss);
+      });
 };
 
 
 /**
  * Modifies snapshot data.
- *
- * @param {string} snapshotId The identifier for the snapshot to modify.
  */
 snapshots.pokeCurrentSnapshot = function() {
   snapshots.uploadSnapshot();
-}
+};
 
 
 /**
  * Callback function that uploads metadata for a snapshot.
+ *
+ * @param {function} callback The function to call when the callback completes.
  */
 snapshots.uploadSnapshot = function(callback) {
   var contentType = 'application/octet-stream';
   var boundary = '-------374159275358879320846';
-  var delimiter = "\r\n--" + boundary + "\r\n";
-  var close_delim = "\r\n--" + boundary + "--";
+  var delimiter = '\r\n--' + boundary + '\r\n';
+  var close_delim = '\r\n--' + boundary + '--';
 
-  console.log("Writing snapshot: ");
+  console.log('Writing snapshot: ');
   console.log(snapshots.lastSnapshot);
 
   // Update the description in the snapshot metadata.
@@ -174,16 +180,16 @@ snapshots.uploadSnapshot = function(callback) {
       close_delim;
 
   var request = gapi.client.request({
-      'path': '/upload/drive/v2/files/' + snapshots.lastSnapshot.id,
-      'method': 'PUT',
-      'params': {'uploadType': 'multipart', 'alt': 'json'},
-      'headers': {
-        'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-      },
-      'body': multipartRequestBody});
+    'path': '/upload/drive/v2/files/' + snapshots.lastSnapshot.id,
+    'method': 'PUT',
+    'params': {'uploadType': 'multipart', 'alt': 'json'},
+    'headers': {
+      'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+    },
+    'body': multipartRequestBody});
   if (!callback) {
     callback = function(file) {
-      console.log(file)
+      console.log(file);
     };
   }
   request.execute(callback);
@@ -195,14 +201,14 @@ snapshots.uploadSnapshot = function(callback) {
  *
  * @param {String} snapshotTitle The snapshot title to find conflicts for.
  */
-snapshots.findSnapshotConflicts = function(snapshotTitle){
+snapshots.findSnapshotConflicts = function(snapshotTitle) {
   // TODO (class) show conflicts
   // Find the snapshot save file
   gapi.client.drive.files.list(
-    {q:'title = "' + snapshotTitle + '" and mimeType = ' +
-        '"application/vnd.google-play-games.snapshot"'}).
-      execute(function(r){console.log(r)});
-}
+      {q: 'title = "' + snapshotTitle + '" and mimeType = ' +
+            '"application/vnd.google-play-games.snapshot"'}).
+      execute(function(r) {console.log(r)});
+};
 
 
 /**
@@ -211,7 +217,7 @@ snapshots.findSnapshotConflicts = function(snapshotTitle){
  * @param {File} file Drive File instance.
  * @param {Function} callback Function to call when the request is complete.
  */
-snapshots.downloadFile = function (file, callback) {
+snapshots.downloadFile = function(file, callback) {
   console.log(file);
   if (file.downloadUrl) {
     var accessToken = gapi.auth.getToken().access_token;
@@ -228,4 +234,4 @@ snapshots.downloadFile = function (file, callback) {
   } else {
     callback(null);
   }
-}
+};

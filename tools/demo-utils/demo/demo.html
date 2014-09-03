@@ -388,7 +388,7 @@
       var pages = document.querySelector('core-pages');
       pages.selected = (pages.selected + 1) % pages.children.length;
 
-      console.log("Selected: " + tabs.selected);
+      console.log('Selected: ' + tabs.selected);
 
       var pageIds = [
         {selectorId: 0, idString: '#achievements', color: colors.accent1},
@@ -397,19 +397,19 @@
         {selectorId: 3, idString: '#snapshots', color: colors.accent4}
       ];
 
-      for (var i=0; i < pageIds.length; i++){
-        if (pageIds[i].selectorId == tabs.selected){
+      for (var i = 0; i < pageIds.length; i++) {
+        if (pageIds[i].selectorId == tabs.selected) {
           var highlight = document.querySelector(pageIds[i].idString);
           highlight.classList.add('core-selected');
-          highlight.style.display='block';
+          highlight.style.display = 'block';
           document.querySelector('core-toolbar').style.backgroundColor =
               pageIds[i].color;
           document.querySelector('paper-tabs').style.backgroundColor =
               pageIds[i].color;
-        }else{
+        } else {
           var highlight = document.querySelector(pageIds[i].idString);
           highlight.classList.remove('core-selected');
-          highlight.style.display='none';
+          highlight.style.display = 'none';
         }
       }
     });
@@ -419,8 +419,10 @@
 
 /**
  *  Callback on signin check.
- *  Signin check happens both on page load and when you click
- *  the actual signin button.
+ *  Note: The signin check happens both on page load and when you click the
+ *  actual signin button.
+ *
+ * @param {Object} authResult The data result returned from sign in.
  */
 function signinCallback(authResult) {
   console.log(authResult);
@@ -428,9 +430,9 @@ function signinCallback(authResult) {
       achievements.initAchievements();
       // Successfully authorized
       // Hide the sign-in button now that the user is authorized, for example:
-      document.getElementById('signinButton').style.display= 'none';
-      document.getElementById('signoutButton').style.display =  'block';
-      document.getElementById('disconnectButton').style.display =  'block';
+      document.getElementById('signinButton').style.display = 'none';
+      document.getElementById('signoutButton').style.display = 'block';
+      document.getElementById('disconnectButton').style.display = 'block';
 
       player.personalizeUI();
       document.getElementById('playerCard').style.display = 'block';
@@ -441,18 +443,18 @@ function signinCallback(authResult) {
       //   "immediate_failed" - Could not automatically log in the user
       console.log('There was an error: ' + authResult.error);
 
-      document.getElementById('signinButton').style.display= 'block';
-      document.getElementById('signoutButton').style.display =  'none';
-      document.getElementById('disconnectButton').style.display =  'none';
+      document.getElementById('signinButton').style.display = 'block';
+      document.getElementById('signoutButton').style.display = 'none';
+      document.getElementById('disconnectButton').style.display = 'none';
       document.getElementById('playerCard').style.display = 'none';
   }
 }
 
 
+/** Activate the authorized UI. */
 var activateUI = function() {
-  // Activate.
   document.getElementById('activeUI').style.display = 'block';
-}
+};
 
 
 var gapi = gapi || {};
@@ -474,9 +476,12 @@ var loadGoogleClients = function() {
  * Async load of Google API client libraries and signin script.
  */
 (function() {
-  var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-  po.src = 'https://apis.google.com/js/client:plusone.js?onload=loadGoogleClients';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  var po = document.createElement('script');
+  po.type = 'text/javascript'; po.async = true;
+  po.src =
+    'https://apis.google.com/js/client:plusone.js?onload=loadGoogleClients';
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(po, s);
 })();
 </script>
 </html>
