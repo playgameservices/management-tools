@@ -291,3 +291,18 @@ player.unhidePlayer = function() {
        }
      });
 };
+
+
+/**
+ * Personalizes the UI to include a visual representation of the player.
+ */
+player.personalizeUI = function(){
+  gapi.client.games.players.get({playerId: 'me'}).execute(function(player) {
+    var playerHtml = '<table><td><img src="' + player.avatarImageUrl + 
+        '" alt="' + player.displayName + 
+        '" title="' + player.displayName + '" height="45" />' + 
+        '</a></td><td>' + 'Signed in' + ' as:<br>' + player.displayName + 
+        '</td></tr></table>';
+    document.getElementById('playerCard').innerHTML = playerHtml;
+  });
+}

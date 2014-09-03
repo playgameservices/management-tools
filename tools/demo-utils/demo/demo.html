@@ -33,6 +33,17 @@
   <core-header-panel>
     <core-toolbar class="medium-tall">
       <paper-menu-button icon="menu" halign="left">
+        <paper-item id="signoutButton"
+            onClick="gapi.auth.signOut()"
+            style="font-size:15px; color:#000; display:none;"
+            label="Signout"></paper-item>
+        <paper-item id="disconnectButton"
+            style="font-size:15px; color:#000; display:none;"
+            label="Disconnect"></paper-item>
+      </paper-menu-button>
+
+      <div flex>Demo:  Google Play Games Management Console</div>
+      <div>
         <paper-item id="signinButton">
           <div style="margin-top: 10px;">
             <span>
@@ -46,17 +57,8 @@
             </span>
           </div>
         </paper-item>
-        <paper-item id="signoutButton"
-            onClick="gapi.auth.signOut()"
-            style="font-size:15px; color:#000; display:none;"
-            label="Signout"></paper-item>
-        <paper-item id="disconnectButton"
-            style="font-size:15px; color:#000; display:none;"
-            label="Disconnect"></paper-item>
-      </paper-menu-button>
-
-      <div flex>Demo:  Google Play Games Management Console</div>
-
+        <div id='playerCard'></div>
+      </div>
       <div class="bottom fit" horizontal layout>
         <paper-tabs selected="0" flex style="max-width: 600px;">
           <paper-tab>Achievements</paper-tab>
@@ -421,24 +423,28 @@
  *  the actual signin button.
  */
 function signinCallback(authResult) {
-    console.log(authResult);
-    if (authResult.access_token) {
-        achievements.initAchievements();
-        // Successfully authorized
-        // Hide the sign-in button now that the user is authorized, for example:
-        document.getElementById('signinButton').style.display= 'none';
-        document.getElementById('signoutButton').style.display =  'block';
-        document.getElementById('disconnectButton').style.display =  'block';
-    } else if (authResult.error) {
-        // There was an error.
-        // Possible error codes:
-        //   "access_denied" - User denied access to your app
-        //   "immediate_failed" - Could not automatically log in the user
-        console.log('There was an error: ' + authResult.error);
+  console.log(authResult);
+  if (authResult.access_token) {
+      achievements.initAchievements();
+      // Successfully authorized
+      // Hide the sign-in button now that the user is authorized, for example:
+      document.getElementById('signinButton').style.display= 'none';
+      document.getElementById('signoutButton').style.display =  'block';
+      document.getElementById('disconnectButton').style.display =  'block';
 
-        document.getElementById('signinButton').style.display= 'block';
-        document.getElementById('signoutButton').style.display =  'none';
-        document.getElementById('disconnectButton').style.display =  'none';
+      player.personalizeUI();
+      document.getElementById('playerCard').style.display = 'block';
+  } else if (authResult.error) {
+      // There was an error.
+      // Possible error codes:
+      //   "access_denied" - User denied access to your app
+      //   "immediate_failed" - Could not automatically log in the user
+      console.log('There was an error: ' + authResult.error);
+
+      document.getElementById('signinButton').style.display= 'block';
+      document.getElementById('signoutButton').style.display =  'none';
+      document.getElementById('disconnectButton').style.display =  'none';
+      document.getElementById('playerCard').style.display = 'none';
   }
 }
 

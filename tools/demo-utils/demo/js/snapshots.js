@@ -159,7 +159,7 @@ snapshots.uploadSnapshot = function(callback) {
 
   // Update the description in the snapshot metadata.
   //lastSnapshot.coverImage.url = imageFile.webContentLink;
-  snapshot.lastSnapshot.description = 'Modified data at: ' + new Date();
+  snapshots.lastSnapshot.description = 'Modified data at: ' + new Date();
 
   var base64Data = btoa(document.getElementById('ssRawData').value);
   var multipartRequestBody =
