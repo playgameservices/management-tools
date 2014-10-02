@@ -1,10 +1,18 @@
-In this repository you can find tools to help you
-manage your Play Games services apps.
+# Play Games Services Managment Tools #
 
-Hide-o-matic:  Helps you hide and unhide players
-from public leaderboards.
+In this repository you can find tools to help you manage and test your Play
+Games services apps.
 
-Score-o-matic: Lets you set and reset leaderboard
-scores.
+## demo-management-tools ##
+Demonstrates a management interface that lets you:
 
-Reset-o-matic: Lets you unlock and reset achievements.
+* Reset, show, hide, and unlock [Achievements][achievementslink]
+* Perform administration on [Leaderboards][leaderboardslink] such as hiding
+  players
+* Test and administrate [Events and Quests][eventsquestslink]
+* Inspect [Snapshot data][snapshotlink]
+
+[achievementslink]: https://developers.google.com/games/services/common/concepts/achievements "Achievements Concepts"
+[eventsquestslink]: https://developers.google.com/games/services/common/concepts/quests "Events and Quests Concepts"
+[leaderboardslink]: https://developers.google.com/games/services/common/concepts/leaderboards "Leaderboards Concepts"
+[snapshotslink]: https://developers.google.com/games/services/common/concepts/savedgames "Saved Games Concepts"
