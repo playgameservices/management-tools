@@ -11,6 +11,13 @@
     <script src="js/leaderboards.js"></script>
     <script src="js/player.js"></script>
     <script src="js/snapshots.js"></script>
+    <script src="js/utilities.js"></script>
+
+    <style>
+      core-pages {
+        height:100%;
+      }
+    </style>
 
     <!-- Polymer -->
     <script src="../bower_components/platform/platform.js"></script>
@@ -47,10 +54,18 @@
         <paper-item id="signinButton">
           <div style="margin-top: 10px;">
             <span>
+              <!--
+                Update the following value with your Client ID, a string
+                such as 99999999999.apps.googleusercontent.com, from the Google
+                Play Games Developer Console:
+                    https://play.google.com/apps/publish
+
+                DON'T FORGET TO UPDATE APP_ID js/constants.js.
+              -->
               <span
                 class="g-signin"
                 data-callback="signinCallback"
-                data-clientid="YOUR_CLIENT_ID"
+                data-clientid="REPLACE_CLIENT_ID"
                 data-cookiepolicy="single_host_origin"
                 data-scope="https://www.googleapis.com/auth/games https://www.googleapis.com/auth/drive.appdata">
               </span>
@@ -77,7 +92,7 @@
             <div>
             <h2 class="pageHeading">Achievements Management</h2>
             </div>
-            <div class="mainContent" flex>
+            <div class="mainContent">
               <p>
               <div vertical layout class="miniForm">
                 <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
@@ -88,11 +103,11 @@
                        label="Refresh achievements" ></paper-button>
                   </div>
                 </div>
-                <div flex id="achievementListDiv"></div>
+                <div id="achievementListDiv"></div>
               </div>
               <p>
               <div horizontal layout class="miniForm">
-                <div flex>
+                <div>
                   <div horizontal layout>
                     <div><b>Unlock</b> this achievement for me:
                     <p>
@@ -162,7 +177,7 @@
             <div>
               <h2 class="pageHeading" >Leaderboard Management</h2>
             </div>
-            <div flex class="mainContent">
+            <div class="mainContent">
               <p>
               <div vertical layout class="miniForm">
                 <div horizontal layout>
@@ -271,7 +286,7 @@
             <div>
             <h2 class="pageHeading">Events and Quests Management</h2>
             </div>
-            <div class="mainContent" flex>
+            <div class="mainContent">
               <div vertical layout class="miniForm">
                 <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
                   <div id="eventsBox" flex></div>
@@ -329,7 +344,7 @@
             <div>
             <h2 class="pageHeading">Snapshots Management</h2>
             </div>
-            <div class="mainContent" flex>
+            <div class="mainContent">
               <div vertical layout class="miniForm">
                 <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
                   <div flex style="text-align:left;">
@@ -427,15 +442,14 @@
 function signinCallback(authResult) {
   console.log(authResult);
   if (authResult.access_token) {
-      achievements.initAchievements();
       // Successfully authorized
       // Hide the sign-in button now that the user is authorized, for example:
       document.getElementById('signinButton').style.display = 'none';
       document.getElementById('signoutButton').style.display = 'block';
       document.getElementById('disconnectButton').style.display = 'block';
-
-      player.personalizeUI();
       document.getElementById('playerCard').style.display = 'block';
+
+      loadGoogleClients();
   } else if (authResult.error) {
       // There was an error.
       // Possible error codes:
@@ -454,6 +468,9 @@ function signinCallback(authResult) {
 /** Activate the authorized UI. */
 var activateUI = function() {
   document.getElementById('activeUI').style.display = 'block';
+  // Wait briefly to ensure that the client has authorized.
+  player.personalizeUI();
+  achievements.initAchievements();
 };
 
 
@@ -479,7 +496,7 @@ var loadGoogleClients = function() {
   var po = document.createElement('script');
   po.type = 'text/javascript'; po.async = true;
   po.src =
-    'https://apis.google.com/js/client:plusone.js?onload=loadGoogleClients';
+    'https://apis.google.com/js/client:plusone.js';
   var s = document.getElementsByTagName('script')[0];
   s.parentNode.insertBefore(po, s);
 })();

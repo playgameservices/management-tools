@@ -14,7 +14,9 @@
  */
 
 
-// Please fill these out with the values from your
-// actual game.  DON'T FORGET TO FILL OUT CLIENT_ID
-// IN demo.html.
-var APP_ID = 'YOUR_APP_ID';
+// Update the following value with your App ID, a 9-12 digit number such as
+// 999999999, from the Google Play Games Developer Console:
+//    https://play.google.com/apps/publish
+//
+// DON'T FORGET TO FILL OUT REPLACE_CLIENT_ID IN demo.html.
+var APP_ID = 'REPLACE_APP_ID';

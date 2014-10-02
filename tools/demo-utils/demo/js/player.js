@@ -38,35 +38,28 @@ player.createPlayerList = function(root, items, showScore) {
   row = document.createElement('tr');
   row.style.backgroundColor = '#e81d62';
   row.style.color = '#FFF';
-  cell = document.createElement('th');
-  cell.setAttribute('colSpan', '5');
-  cell.appendChild(document.createTextNode(
-      'Total players on this page: ' +
-      items.length));
+  var cellText = 'Total players on this page: ' + items.length;
+  cell = utilities.createCell('th', cellText, undefined, undefined, 5);
   row.appendChild(cell);
   tab.appendChild(row);
 
   row = document.createElement('tr');
   row.style.backgroundColor = '#e81d62';
   row.style.color = '#FFF';
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('DISPLAY NAME'));
+  cell = utilities.createCell('th', 'DISPLAY NAME');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('Icon'));
+  cell = utilities.createCell('th', 'Icon');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('PLAYER ID'));
+  cell = utilities.createCell('th', 'PLAYER ID');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
+  cell = utilities.createCell('th');
   row.appendChild(cell);
 
   if (showScore) {
-    cell = document.createElement('th');
-    cell.appendChild(document.createTextNode('SCORE'));
+    cell = utilities.createCell('th', 'SCORE');
     row.appendChild(cell);
   }
 
@@ -79,14 +72,12 @@ player.createPlayerList = function(root, items, showScore) {
     row.style.backgroundColor = index & 1 ? '#CCC' : '#FFF';
 
     console.log('Name: ' + item.player.displayName +
-                    ', playerId:' + item.player.playerId +
-                    ' ' + item.scoreValue);
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.player.displayName));
+        ', playerId:' + item.player.playerId +
+        ' ' + item.scoreValue);
+    cell = utilities.createCell('td', item.player.displayName);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-
+    cell = utilities.createCell('td');
     var img = document.createElement('img');
     img.setAttribute('src', item.player.avatarImageUrl + '?sz=50');
     img.setAttribute('height', '50px');
@@ -94,48 +85,24 @@ player.createPlayerList = function(root, items, showScore) {
     cell.appendChild(img);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.player.playerId));
+    cell = utilities.createCell('td', item.player.playerId);
     row.appendChild(cell);
 
     // Need an active button
-    cell = document.createElement('td');
-    var button = document.createElement('button');
-    button.setAttribute('type', 'button');
-    button.setAttribute('name', 'edit');
-    button.setAttribute('value', item.player.playerId);
-    button.appendChild(document.createTextNode('Pick me!'));
-    button.addEventListener('click', player.sendPlayerDataToInputs, false);
+    cell = utilities.createCell('td');
+    var button = utilities.createButton('Pick me!', item.player.playerId,
+        player.sendPlayerDataToInputs);
     cell.appendChild(button);
     row.appendChild(cell);
 
     if (showScore) {
-      cell = document.createElement('td');
-      cell.appendChild(document.createTextNode(item.scoreValue));
+      cell = utilities.createCell('td', item.scoreValue);
       row.appendChild(cell);
     }
 
     tab.appendChild(row);
   }
   root.appendChild(tab);
-};
-
-
-/**
- * Creates a button on the page.
- *
- * @param {string} text The button text.
- * @param {function} handler The function called when the button is clicked.
- * @return {Object} The created button.
- */
-player.createPageButton = function(text, handler) {
-  var button = document.createElement('button');
-  button.setAttribute('type', 'button');
-  button.setAttribute('name', 'edit');
-  button.setAttribute('value', item.player.playerId);
-  button.appendChild(document.createTextNode(text));
-  button.addEventListener('click', handler, false);
-  return button;
 };
 
 
@@ -166,17 +133,17 @@ player.showHighScoreList = function(pageToken) {
         player.createPlayerList(root, response.items, true);
         if (response.prevPageToken) {
           root.appendChild(
-              player.createPageButton(
-              'Prev',
-              function(event) {
-                player.showHighScoreList(response.prevPageToken);}));
+              utilities.createButton('Prev', response.prevPageToken,
+                  function(event) {
+                    player.showHighScoreList(event.target.value);
+                  }));
         }
         if (response.nextPageToken) {
           root.appendChild(
-              player.createPageButton(
-              'Next',
-              function(event) {
-                player.showHighScoreList(response.nextPageToken);}));
+              utilities.createButton('Prev', response.prevPageToken,
+                  function(event) {
+                    player.showHighScoreList(event.target.value);
+                  }));
         }
       });
 };
@@ -206,19 +173,17 @@ player.showHiddenPlayers = function(pageToken) {
         }
         if (response.prevPageToken) {
           root.appendChild(
-              player.createPageButton(
-              'Prev',
-              function(event) {
-                            player.showHiddenPlayers(response.prevPageToken);
-              }));
+              utilities.createButton('Prev', response.prevPageToken,
+                  function(event) {
+                    player.showHiddenPlayers(event.target.value);
+                  }));
         }
         if (response.nextPageToken) {
           root.appendChild(
-              player.createPageButton(
-              'Next',
-              function(event) {
-                            player.showHiddenPlayers(response.nextPageToken);
-              }));
+              utilities.createButton('Next', response.nextPageToken,
+                  function(event) {
+                    player.showHiddenPlayers(event.target.value);
+                  }));
         }
       });
 };
@@ -305,10 +270,10 @@ player.unhidePlayer = function() {
 player.personalizeUI = function() {
   gapi.client.games.players.get({playerId: 'me'}).execute(function(player) {
     var playerHtml = '<table><td><img src="' + player.avatarImageUrl +
-        '" alt="' + player.displayName +
-        '" title="' + player.displayName + '" height="45" />' +
-        '</a></td><td>' + 'Signed in' + ' as:<br>' + player.displayName +
-        '</td></tr></table>';
+        '" alt="' + utilities.escapeQuotes(player.displayName) +
+        '" title="' + utilities.escapeQuotes(player.displayName) +
+        '" height="45" />' + '</a></td><td>' + 'Signed in' + ' as:<br>' +
+        utilities.escapeQuotes(player.displayName) + '</td></tr></table>';
     document.getElementById('playerCard').innerHTML = playerHtml;
   });
 };

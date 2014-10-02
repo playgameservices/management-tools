@@ -30,38 +30,99 @@ events.updateEventsList = function(pageToken) {
   gapi.client.games.events.listDefinitions({maxResults: 10, pageToken: pageToken
   }).execute(
       function(response) {
-        var content = '<table cellpadding=2 cellspacing=0 border=0>\n';
-        content += '  <tr style="color:#fff; background:#9F499B;">\n';
-        content += '    <th>Event Name</th><th>ID</th><th>Visibility</th>' +
-            '<th>Count</th><th>Increment</th>\n';
-        content += '  </tr>\n';
+        var root = document.getElementById('eventsBox');
+        root.innerHTML = '';
+        events.createEventsList(root, response.items);
 
-        var events = response.items;
-        for (var i = 0; i < events.length; i++) {
-          content += '  <tr style="background:#fff;">\n';
-          content += '    <td>' + events[i].displayName + '</td>';
-          content += '    <td><input size=25 type=text value=' +
-              events[i].id + ' disabled></td>';
-          content += '    <td>' + events[i].visibility + '</td>\n';
-          content += '    <td style="text-align: center;" id="' + events[i].id +
-              '"></td>\n';
-          content += '    <td><button onclick="events.incrementEvent(\'' +
-              events[i].id + '\', 1);">trigger</button>\n';
-          content += '    <button onclick="events.setCurrentEventId(\'' +
-              events[i].id + '\', 1);">pick</button></td>\n';
-          content += '  </tr>\n';
+        if (response.prevPageToken) {
+          root.appendChild(
+              utilities.createButton('Prev', response.prevPageToken,
+                  function(event) {
+                    events.updateEventsList(event.target.value);
+                  }));
         }
-
-        content += '</table>';
-
         if (response.nextPageToken) {
-          content += '<paper-button onClick="events.updateEventsList(\'' +
-              response.nextPageToken +
-              '\')" label="next" class="eqButton"></paper-button>';
-        }else { console.log(response); }
-        document.getElementById('eventsBox').innerHTML = content;
+          root.appendChild(
+              utilities.createButton('Next', response.nextPageToken,
+                  function(event) {
+                    events.updateEventsList(event.target.value);
+                  }));
+        }
       }
   );
+};
+
+
+/**
+ * Creates list of Events.
+ *
+ * @param {Object} root the element you want to append this to.
+ * @param {Array} items the list of achievements
+ */
+events.createEventsList = function(root, items) {
+  console.log('Show events');
+  var tab = document.createElement('table');
+  tab.className = 'gridtable';
+  var row, cell;
+
+  // Make the header
+  row = document.createElement('tr');
+  row.style.backgroundColor = colors.accent3;
+  cell = utilities.createCell('th', 'Name', undefined, '#FFF');
+  row.appendChild(cell);
+
+  cell = utilities.createCell('th', 'ID', undefined, '#FFF');
+  row.appendChild(cell);
+
+  cell = utilities.createCell('th', 'Visibility', undefined, '#FFF');
+  row.appendChild(cell);
+
+  cell = utilities.createCell('th', 'Count', undefined, '#FFF');
+  row.appendChild(cell);
+
+  cell = utilities.createCell('th', 'Increment', undefined, '#FFF');
+  row.appendChild(cell);
+
+  tab.appendChild(row);
+
+  // Now actually parse the data.
+  for (var index in items) {
+    item = items[index];
+    row = document.createElement('tr');
+    row.style.backgroundColor = index & 1 ? '#CCC' : '#FFF';
+
+    cell = utilities.createCell('td', item.displayName);
+    row.appendChild(cell);
+
+    var input = utilities.createTextInput(42, item.id, true);
+    cell = utilities.createCell('td', undefined, undefined, undefined,
+        undefined, input);
+    row.appendChild(cell);
+
+    cell = utilities.createCell('td', item.visibility);
+    row.appendChild(cell);
+
+    cell = utilities.createCell('td');
+    cell.id = item.id;
+    row.appendChild(cell);
+
+    cell = utilities.createCell('td');
+    cell.appendChild(
+        utilities.createButton('trigger', item.id,
+            function(event) {
+              events.incrementEvent(event.target.value);
+            }));
+    cell.appendChild(
+        utilities.createButton('pick', item.id,
+            function() {
+              events.setCurrentEventId(event.target.value);
+            }));
+    row.appendChild(cell);
+
+    tab.appendChild(row);
+  }
+
+  root.appendChild(tab);
 };
 
 
@@ -72,6 +133,7 @@ events.updateEventsList = function(pageToken) {
  * @param {int} count The count you want to increment the event.
  */
 events.incrementEvent = function(id, count) {
+  console.log('Incrementing event: ' + id);
   mockTime = new Date().getTime();
   gapi.client.games.events.record(
       {
@@ -109,73 +171,139 @@ events.incrementEvent = function(id, count) {
  * Updates the list of available quests and associated events.
  *
  * @param {?string} pageToken The next page token from the previous API call.
- * TODO (class) Clean up HTML generation into Polymer components.
  */
 quests.updateQuestsList = function(pageToken) {
   gapi.client.games.quests.list({playerId: 'me', maxResults: 5,
     pageToken: pageToken}).execute(
       function(response) {
-        var content = '';
-        var quests = response.items;
-        if (!quests) return;
-        for (var i = 0; i < quests.length; i++) {
-          if (i > 0) {
-            content += '<hr>';
-          }
-          content += '<h3>' + quests[i].name + ' - ' + quests[i].description +
-              '</h3><paper-button label="accept" ' +
-              'onClick="quests.acceptQuest(\'' + quests[i].id +
-              '\')" class="eqButton"></paper-button> &nbsp;' +
-              '<paper-button label="Reset" class="eqButton" ' +
-              'onClick="quests.resetQuest(\'' + quests[i].id + '\')">' +
-              '</paper-button>';
-          var milestones = quests[i].milestones;
+        var questList = response.items;
+        if (!questList) return;
 
-          content += '<table cellpadding=0 cellspacing=0 border=0>\n';
-          content += '  <tr style="color:#fff; background:#9F499B;">\n';
-          content += '    <th>MileStoneId</th><th>Critera</th>';
-          content += '  </tr>\n';
+        var root = document.getElementById('questsBox');
+        root.innerText = '';
 
-          for (var j = 0; j < milestones.length; j++) {
-            content += '  <tr style="background:#fff;">\n';
-            content += '    <td>' + milestones[j].id + '</td>\n';
-            content += '    <td>\n';
-
-            var criteria = milestones[j].criteria;
-
-            content += '<table>\n';
-            content += '<tr><th>Event</th><th>Contribution</th><th>Select' +
-                '</th>' + '</tr>';
-            for (var k = 0; k < criteria.length; k++) {
-              var currContribution = criteria[k].currentContribution ?
-                  criteria[k].currentContribution.formattedValue : 'n/a';
-              var complContribution = criteria[k].completionContribution ?
-                  criteria[k].completionContribution.formattedValue : 'n/a';
-              var initPlayerProgress = criteria[k].initialPlayerProgress ?
-                  criteria[k].initialPlayerProgress.formattedValue : 'n/a';
-
-              content += '<tr><td>' + '<input size=42 type=text value="' +
-                  criteria[k].eventId + '" disabled></input></td>' +
-                  '<td>' + currContribution + ' / ' + complContribution +
-                  ' [' + initPlayerProgress + ']</td>';
-              content += '<td><button onclick="events.setCurrentEventId(\'' +
-                  criteria[k].eventId + '\')">Pick</button>\n</td></tr>';
-            }
-            content += '</table>\n';
-            content += '    </td>';
-          }
-          content += '</table>\n';
-        }
+        quests.createQuestsList(root, questList);
 
         if (response.nextPageToken) {
-          content += '<paper-button class="eqButton" label="Next" onClick="' +
-              'quests.updateQuestsList(\'' + response.nextPageToken + '\')">' +
-              '</paper-button>';
+          var nextPage = utilities.createButton('Next', response.nextPageToken,
+              function(event) {
+                quests.updateQuestList(event.target.value);
+              });
+          root.appendChild(nextPage);
         }
-
-        document.getElementById('questsBox').innerHTML = content;
       }
   );
+};
+
+
+/**
+ * Creates list of Quests.
+ *
+ * @param {Object} root The element you want to append this to.
+ * @param {Array} questList The list of Quests.
+ */
+quests.createQuestsList = function(root, questList) {
+  console.log('Show quests');
+
+  for (var index = 0; index < questList.length; index++) {
+    if (index > 0) {
+      root.appendChild(document.createElement('hr'));
+    }
+
+    var quest = questList[index];
+    var title = document.createElement('h3');
+    title.innerText = quest.name + ' - ' + quest.description;
+    root.appendChild(title);
+
+    root.appendChild(utilities.createButton('Accept', quest.id,
+          function(evt) {
+            quests.acceptQuest(evt.target.value);
+          }));
+
+    root.appendChild(utilities.createButton('Reset', quest.id,
+        function(evt) {
+          quests.resetQuest(evt.target.value);
+        }));
+
+    var tab = document.createElement('table');
+    tab.className = 'gridtable';
+    var row, cell;
+
+    // Make the header
+    row = document.createElement('tr');
+    row.style.backgroundColor = colors.accent3;
+    cell = utilities.createCell('th', 'MilestoneId', undefined, '#FFF');
+    row.appendChild(cell);
+    cell = utilities.createCell('th', 'Criteria', undefined, '#FFF');
+    row.appendChild(cell);
+    tab.appendChild(row);
+
+    // Add the Milestone / criteria data
+    var milestones = quest.milestones;
+    for (var i = 0; i < milestones.length; i++) {
+      var milestone = milestones[i];
+      row = document.createElement('tr');
+      row.style.backgroundColor = '#FFF';
+      cell = utilities.createCell('td', milestone.id, undefined);
+      row.appendChild(cell);
+
+      var innerTab = document.createElement('table');
+
+      // Add inner table header.
+      var innerRow = document.createElement('tr');
+      innerRow.style.backgroundColor = colors.accent3;
+      innerRow.style.color = '#FFF';
+      var innerCel = utilities.createCell('th', 'Event');
+      innerRow.appendChild(innerCel);
+      innerCel = utilities.createCell('th', 'Contribution');
+      innerRow.appendChild(innerCel);
+      innerCel = utilities.createCell('th', 'Select');
+      innerRow.appendChild(innerCel);
+      innerTab.appendChild(innerRow);
+
+      // Add rows for milestone criteria.
+      var criteria = milestone.criteria;
+      for (var j = 0; j < criteria.length; j++) {
+        var currContribution = criteria[j].currentContribution ?
+            criteria[j].currentContribution.formattedValue : 'n/a';
+        var complContribution = criteria[j].completionContribution ?
+            criteria[j].completionContribution.formattedValue : 'n/a';
+        var initPlayerProgress = criteria[j].initialPlayerProgress ?
+            criteria[j].initialPlayerProgress.formattedValue : 'n/a';
+        var completionString = currContribution + ' / ' + complContribution +
+                  ' [' + initPlayerProgress + ']';
+
+        innerRow = document.createElement('tr');
+
+        var textInput = utilities.createTextInput(42, criteria[j].eventId,
+            true);
+        innerCel = utilities.createCell('td', undefined, undefined, undefined,
+            undefined, textInput);
+        innerRow.appendChild(innerCel);
+        innerCel = utilities.createCell('td', completionString);
+        innerRow.appendChild(innerCel);
+        innerCel = utilities.createCell('td');
+        var tempButton = utilities.createButton('Pick', criteria[j].eventId,
+            function(evt) {
+              events.setCurrentEventId(evt.target.value);
+            });
+        innerCel.appendChild(tempButton);
+        tempButton = utilities.createButton('Trigger', criteria[j].eventId,
+            function(evt) {
+              events.incrementEvent(evt.target.value);
+            });
+        innerCel.appendChild(tempButton);
+        innerRow.appendChild(innerCel);
+        innerTab.appendChild(innerRow);
+      }
+      cell = utilities.createCell('td');
+      cell.appendChild(innerTab);
+      row.appendChild(cell);
+      tab.appendChild(row);
+    }
+    root.appendChild(tab);
+  }
+  console.log(tab);
 };
 
 
@@ -185,6 +313,7 @@ quests.updateQuestsList = function(pageToken) {
  * @param {string} questId The identifier for the quest to accept.
  */
 quests.acceptQuest = function(questId) {
+  console.log('Accepting quest: ' + questId);
   gapi.client.games.quests.accept({questId: questId}).execute(function(resp) {
     console.log('Accepted request response:');
     console.log(resp);

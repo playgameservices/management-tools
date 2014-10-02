@@ -38,26 +38,59 @@ drive.HOST_FOLDER = 'snapshotImages';
  */
 snapshots.updateSnapshotList = function() {
   var callback = function(resp) {
-    console.log(resp);
-    var content = '<form>';
+    var root = document.getElementById('snapshotsListArea');
+    var formElement = document.createElement('form');
+
     if (resp.items) {
       currSnapshotIds = [];
       for (var i = 0; i < resp.items.length; i++) {
-        currSnapshotIds[currSnapshotIds.length] = resp.items[i].id;
-        content += '<paper-radio-button toggles="true" id="' +
-            resp.items[i].id + '" ' +
-            'onClick="snapshots.toggleSnapshot(\'' +
-            resp.items[i].id + '\');"></paper-radio-button> &nbsp;' +
-            resp.items[i].description + '<p><img src="' +
-            resp.items[i].coverImage.url + '"></img>' +
-            ((i < (resp.items.length - 1)) ? '<hr>' : '');
+        formElement.appendChild(
+          snapshots.generateSnapshotRadio(resp.items[i].id,
+              resp.items[i].description, resp.items[i].coverImage,
+              (i < (resp.items.length - 1))));
       }
     }
-    content += '</form>';
-    document.getElementById('snapshotsListArea').innerHTML = content;
+    root.appendChild(formElement);
   };
 
   snapshots.listSnapshots('me', callback);
+};
+
+
+/**
+ * Generates a snapshot radio button.
+ *
+ * @param {string} id The snapshot ID.
+ * @param {string} description The snapshot description.
+ * @param {string} coverImage The cover image URL.
+ * @param {boolean} doHr Set to true to append a HR element.
+ * @return {Object} The radio container for the snapshot element.
+ */
+snapshots.generateSnapshotRadio = function(id, description, coverImage, doHr) {
+  var container = document.createElement('span');
+  var radioSnapshot = document.createElement('input');
+  radioSnapshot.type = 'radio';
+  radioSnapshot.name = 'snapshot';
+  radioSnapshot.id = id;
+  radioSnapshot.onclick = function() {
+    snapshots.toggleSnapshot(utilities.escapeQuotes(id));
+  };
+  container.appendChild(radioSnapshot);
+
+  container.appendChild(document.createElement('br'));
+
+  var textTag = document.createElement('span');
+  textTag.innerText = description;
+  container.appendChild(textTag);
+
+  var imageElement = document.createElement('img');
+  imageElement.src = coverImage.url;
+  container.appendChild(imageElement);
+
+  if (doHr) {
+    container.appendChild(document.createElement('hr'));
+  }
+  return container;
 };
 
 
@@ -119,17 +152,29 @@ snapshots.peekCurrentSnapshot = function() {
  */
 snapshots.peekSnapshotData = function(driveId) {
   var callback = function(resp) {
-    document.getElementById('snapshotEditArea').innerHTML =
-        '<h3>Raw Snapshot Metadata</h3><br>' +
-        '<textarea style="width:600px; height: 800px;">' +
-        JSON.stringify(resp.result, undefined, 2) + '</textarea><hr>';
     snapshots.lastSnapshot = resp;
 
+    var root = document.getElementById('snapshotEditArea');
+    root.innerHTML = '';
+
+    var tempElement = document.createElement('h3');
+    tempElement.innerText = 'Raw Snapshot Metadata';
+    root.appendChild(tempElement);
+
+    tempElement = utilities.createTextArea(undefined, '600px', '800px',
+        JSON.stringify(resp.result));
+    root.appendChild(tempElement);
+
     var innerCallback = function(ss) {
-      document.getElementById('snapshotEditArea').innerHTML +=
-          '<h3>Raw Snapshot Data</h3><br>' +
-          '<textarea id="ssRawData" style="width: 600px; height 400px;">' +
-          ss + '</textarea>';
+      var innerElement = document.createElement('h3');
+      innerElement.innerText = 'Snapshot Edit Area';
+      root.appendChild(innerElement);
+
+      root.appendChild(document.createElement('br'));
+
+      innerElement = utilities.createTextArea('ssRawData', '600px', '400px',
+          ss);
+      root.appendChild(innerElement);
     };
     snapshots.downloadFile(resp, innerCallback);
   };
@@ -164,7 +209,6 @@ snapshots.uploadSnapshot = function(callback) {
   console.log(snapshots.lastSnapshot);
 
   // Update the description in the snapshot metadata.
-  //lastSnapshot.coverImage.url = imageFile.webContentLink;
   snapshots.lastSnapshot.description = 'Modified data at: ' + new Date();
 
   var base64Data = btoa(document.getElementById('ssRawData').value);
@@ -193,21 +237,6 @@ snapshots.uploadSnapshot = function(callback) {
     };
   }
   request.execute(callback);
-};
-
-
-/**
- * Finds open conflicts for a snapshot.
- *
- * @param {String} snapshotTitle The snapshot title to find conflicts for.
- */
-snapshots.findSnapshotConflicts = function(snapshotTitle) {
-  // TODO (class) show conflicts
-  // Find the snapshot save file
-  gapi.client.drive.files.list(
-      {q: 'title = "' + snapshotTitle + '" and mimeType = ' +
-            '"application/vnd.google-play-games.snapshot"'}).
-      execute(function(r) {console.log(r)});
 };
 
 

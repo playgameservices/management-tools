@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 Google Inc.
+/* Copyright (C) 2014 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-// How many async loads have happened?
-var leaderboards = {};
 
-// TODO (class) Use namespace and make state members internal.
+
+var leaderboards = {};
 
 
 /** Creates list of leaderboards with buttons to get scores
@@ -37,44 +36,26 @@ leaderboards.createLeaderboardList = function(root, leaderboards) {
 
   // Make the header
   row = document.createElement('tr');
-  cell = document.createElement('th');
-  cell.style.backgroundColor = '#e81d62';
-  cell.style.color = '#FFF';
-  cell.setAttribute('colSpan', '5');
-  row.appendChild(cell);
-  cell.appendChild(document.createTextNode(
-      'Total leaderboards on this page: ' +
-      leaderboards.length));
+
+  var cellText = 'Total leaderboards on this page: ' + leaderboards.length;
+  cell = utilities.createCell('th', cellText, '#e81d62', '#FFF', 5);
   row.appendChild(cell);
   tab.appendChild(row);
 
   row = document.createElement('tr');
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('name'));
-  cell.style.backgroundColor = '#e81d62';
-  cell.style.color = '#FFF';
+  cell = utilities.createCell('th', 'name', '#e81d62', '#FFF');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.style.backgroundColor = '#e81d62';
-  cell.style.color = '#FFF';
-  cell.appendChild(document.createTextNode('id'));
+  cell = utilities.createCell('th', 'id', '#e81d62', '#FFF');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.style.backgroundColor = '#e81d62';
-  cell.style.color = '#FFF';
+  cell = utilities.createCell('th', '', '#e81d62', '#FFF');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.style.backgroundColor = '#e81d62';
-  cell.style.color = '#FFF';
-  cell.appendChild(document.createTextNode('order'));
+  cell = utilities.createCell('th', 'order', '#e81d62', '#FFF');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.style.backgroundColor = '#e81d62';
-  cell.style.color = '#FFF';
+  cell = utilities.createCell('th', '', '#e81d62', '#FFF');
   row.appendChild(cell);
 
   tab.appendChild(row);
@@ -85,19 +66,13 @@ leaderboards.createLeaderboardList = function(root, leaderboards) {
     row = document.createElement('tr');
     row.style.backgroundColor = index & 1 ? '#CCC' : '#FFF';
 
-    console.log('Name: ' + item.name +
-                    ', id:' + item.id +
-                    ' ' + item.iconUrl);
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.name));
+    cell = utilities.createCell('td', item.name);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.id));
+    cell = utilities.createCell('td', item.id);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-
+    cell = utilities.createCell('td');
     var img = document.createElement('img');
     img.setAttribute('src', item.iconUrl + '?sz=50');
     img.setAttribute('height', '50px');
@@ -105,19 +80,16 @@ leaderboards.createLeaderboardList = function(root, leaderboards) {
     cell.appendChild(img);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.order));
+    cell = utilities.createCell('td', item.order);
     row.appendChild(cell);
 
     // Need an active button
-    cell = document.createElement('td');
+    cell = utilities.createCell('td');
     var button = document.createElement('button');
-    button.setAttribute('type', 'button');
-    button.setAttribute('name', 'edit');
-    button.setAttribute('value', item.id);
-    button.appendChild(document.createTextNode('Get my scores!'));
-    button.addEventListener('click',
-        sendLeaderboardDataToInputs, false);
+    var button = utilities.createButton('Get my scores!', item.id,
+        function(event) {
+          sendLeaderboardDataToInputs(event);
+        });
     cell.appendChild(button);
     row.appendChild(cell);
 
@@ -147,31 +119,25 @@ leaderboards.createScoresList = function(root, scores) {
   row = document.createElement('tr');
   row.style.backgroundColor = '#e81d62';
   row.style.color = '#FFF';
-  cell = document.createElement('th');
-  cell.setAttribute('colSpan', '4');
-  cell.appendChild(document.createTextNode(
-      'Total scores on this page: ' +
-      scores.length));
+
+  var cellString = 'Total scores on this page: ' + scores.length;
+  cell = utilities.createCell('th', cellString, undefined, undefined, 4);
   row.appendChild(cell);
   tab.appendChild(row);
 
   row = document.createElement('tr');
   row.style.backgroundColor = '#e81d62';
   row.style.color = '#FFF';
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('leaderboard_id'));
+  cell = utilities.createCell('th', 'leaderboard_id');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('scoreString'));
+  cell = utilities.createCell('th', 'scoreString');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('public rank'));
+  cell = utilities.createCell('th', 'public rank');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('social rank'));
+  cell = utilities.createCell('th', 'social rank');
   row.appendChild(cell);
 
   tab.appendChild(row);
@@ -182,58 +148,31 @@ leaderboards.createScoresList = function(root, scores) {
     row = document.createElement('tr');
     row.style.backgroundColor = index & 1 ? '#CCC' : '#FFF';
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.leaderboard_id));
+    cell = utilities.createCell('td', item.leaderboard_id);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.scoreString));
+    cell = utilities.createCell('td', item.scoreString);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
+    var cellText = 'No public rank';
     if (item.publicRank) {
-      cell.appendChild(document.createTextNode(
-          item.publicRank.formattedRank +
-          '/' + item.publicRank.formattedNumScores));
-    } else {
-      cell.appendChild(document.createTextNode(
-          'No public rank'));
+      cellText = item.publicRank.formattedRank + '/' +
+          item.publicRank.formattedNumScores;
     }
+    cell = utilities.createCell('td', cellText);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
+    cellText = 'No social rank';
     if (item.socialRank) {
-      cell.appendChild(document.createTextNode(
-          item.socialRank.formattedRank +
-          '/' + item.socialRank.formattedNumScores));
-    } else {
-      cell.appendChild(document.createTextNode(
-          'No social rank'));
+      cellText = item.socialRank.formattedRank + '/' +
+          item.socialRank.formattedNumScores;
     }
+    cell = utilities.createCell('td', cellText);
     row.appendChild(cell);
 
     tab.appendChild(row);
   }
   root.appendChild(tab);
-};
-
-
-/**
- * Creates the page button for leaderboards.
- *
- * @param {string} text The button title.
- * @param {function} handler The function called when the button is clicked.
- * @return {Object} The button that was created.
- */
-leaderboards.createPageButton = function(text, handler) {
-  var button = document.createElement('button');
-  button.setAttribute('type', 'button');
-  button.setAttribute('name', 'edit');
-  button.setAttribute('value', item.player.playerId);
-  button.appendChild(document.createTextNode(text));
-  button.addEventListener('click', handler, false);
-
-  return button;
 };
 
 
@@ -264,19 +203,17 @@ leaderboards.showLeaderboardList = function(pageToken) {
 
         if (response.prevPageToken) {
           root.appendChild(
-              leaderboards.createPageButton(
-              'Prev',
-              function(event) {
-                            player.showHighScoreList(response.prevPageToken);
-              }));
+              utilities.createButton('Prev', response.prevPageToken,
+                  function(event) {
+                    player.showHighScoreList(event.target.value);
+                  }));
         }
         if (response.nextPageToken) {
           root.appendChild(
-              leaderboards.createPageButton(
-              'Next',
-              function(event) {
-                            player.showHighScoreList(response.nextPageToken);
-              }));
+              utilities.createButton('Next', response.nextPageToken,
+                  function(event) {
+                    player.showHighScoreList(event.target.value);
+                  }));
         }
       });
 };
@@ -319,18 +256,18 @@ leaderboards.showScoresList = function(leaderboardId) {
  * Note: This must be global.
  */
 sendLeaderboardDataToInputs = function(event) {
-  console.log(event.target.value);
-  document.getElementById('leaderboardIdInput').value =
-      event.target.value;
-  document.getElementById('leaderboardIdShowHS').value =
-      event.target.value;
+  console.log(event);
+  document.getElementById('leaderboardIdInput').value = event.target.value;
+  document.getElementById('leaderboardIdShowHS').value = event.target.value;
   document.getElementById('leaderboardResetIdInput').value =
       event.target.value;
   leaderboards.showScoresList(event.target.value);
 };
 
 
-/** Submit a high score */
+/**
+ * Submit a high score
+ */
 leaderboards.submitScore = function() {
   var id = document.getElementById('leaderboardResetIdInput').value;
   if (id == '') {
@@ -385,21 +322,3 @@ leaderboards.resetLeaderboard = function() {
         }
       });
 };
-
-
-/**
- * We have to wait for two libraries to load and then
- * signin to occur before it's safe to show the logged in UI.
- */
-leaderboards.checkAllUnitsLoaded = function() {
-};
-
-
-/**
- * Callback from loading client library.  You need a brief pause before
- * you initiate new loads and really start the app.
- */
-var onLoadCallback = function() {
-  window.setTimeout(leaderboards.continueLoadingLibraries, 1);
-};
-

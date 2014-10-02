@@ -19,7 +19,7 @@ var achievements = achievements || {};
 
 
 /**
- * Creates list of achievmeents
+ * Creates list of achievmeents.
  *
  * @param {Object} root the element you want to append this to.
  * @param {Array} items the list of achievements
@@ -32,47 +32,25 @@ achievements.createAchievementList = function(root, items) {
 
   // Make the header
   row = document.createElement('tr');
-  cell = document.createElement('th');
-  cell.style.backgroundColor = colors.accent1;
-  cell.style.color = '#FFF';
-  cell.appendChild(document.createTextNode(
-      'Total achievements on this page: ' +
-      items.length));
-  cell.setAttribute('colSpan', '7');
+  var cellText = 'Total achievements on this page: ' + items.length;
+  cell = utilities.createCell('th', cellText, colors.accent1, '#FFF', 7);
   row.appendChild(cell);
   tab.appendChild(row);
 
   row = document.createElement('tr');
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('Name'));
-  cell.style.backgroundColor = colors.accent1;
-  cell.style.color = '#FFF';
+  cell = utilities.createCell('th', 'Name', colors.accent1, '#FFF');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('ID'));
-  cell.style.backgroundColor = colors.accent1;
-  cell.style.color = '#FFF';
+  cell = utilities.createCell('th', 'ID', colors.accent1, '#FFF');
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.appendChild(document.createTextNode('steps'));
-  cell.style.backgroundColor = colors.accent1;
-  cell.style.color = '#FFF';
-  cell.setAttribute('colSpan', '2');
+  cell = utilities.createCell('th', 'steps', colors.accent1, '#FFF', 2);
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.style.backgroundColor = colors.accent1;
-  cell.style.color = '#FFF';
-  cell.appendChild(document.createTextNode('state'));
-  cell.setAttribute('colSpan', '2');
+  cell = utilities.createCell('th', 'state', colors.accent1, '#FFF', 2);
   row.appendChild(cell);
 
-  cell = document.createElement('th');
-  cell.style.backgroundColor = colors.accent1;
-  cell.style.color = '#FFF';
-  cell.appendChild(document.createTextNode('lastUpdated'));
+  cell = utilities.createCell('th', 'lastUpdated', colors.accent1, '#FFF', 2);
   row.appendChild(cell);
 
   tab.appendChild(row);
@@ -90,74 +68,40 @@ achievements.createAchievementList = function(root, items) {
       row.style.backgroundColor = '#CCC';
     }
 
-    cell = document.createElement('td');
     console.log(item);
     console.log(achievements);
-    cell.appendChild(document.createTextNode(achievements[item.id].name));
+
+    cell = utilities.createCell('td', achievements[item.id].name);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.id));
+    cell = utilities.createCell('td', item.id);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
+    var cellText = 'no steps';
     if (achievements[item.id].totalSteps) {
-      cell.appendChild(document.createTextNode(
-          item.currentSteps +
-          '/' +
-          achievements[item.id].totalSteps));
-
-    } else {
-      cell.appendChild(document.createTextNode('no steps'));
+      cellText = item.currentSteps + '/' + achievements[item.id].totalSteps;
     }
-
+    cell = utilities.createCell('td', cellText);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(
-        document.createTextNode(item.formattedCurrentStepsString));
+    cell = utilities.createCell('td', item.formattedCurrentStepsString);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.achievementState));
+    cell = utilities.createCell('td', item.achievementState);
     row.appendChild(cell);
 
     // Need an active button
-    cell = document.createElement('td');
-    var button = document.createElement('button');
-    button.setAttribute('type', 'button');
-    button.setAttribute('name', 'edit');
-    button.setAttribute('value', item.id);
-    button.appendChild(document.createTextNode('Pick me!'));
-    button.addEventListener('click',
-        achievements.sendAchievementDataToInputs, false);
+    cell = utilities.createCell('td');
+    var button = utilities.createButton('Pick me!', item.id,
+          achievements.sendAchievementDataToInputs);
     cell.appendChild(button);
     row.appendChild(cell);
 
-    cell = document.createElement('td');
-    cell.appendChild(document.createTextNode(item.lastUpdatedTimestamp));
+    cell = utilities.createCell('td', item.lastUpdatedTimestamp);
     row.appendChild(cell);
     tab.appendChild(row);
   }
   root.appendChild(tab);
-};
-
-
-/**
- * Creates a button for the achievement page.
- *
- * @param {string} text The text for the button.
- * @param {function} handler The function handler for the function.
- * @return {Object} The object representing the button.
- */
-achievements.createAchievementPageButton = function(text, handler) {
-  var button = document.createElement('button');
-  button.setAttribute('type', 'button');
-  button.setAttribute('name', 'edit');
-  button.appendChild(document.createTextNode(text));
-  button.addEventListener('click', handler, false);
-
-  return button;
 };
 
 
@@ -186,21 +130,19 @@ achievements.showAchievementList = function(pageToken) {
         var root = document.getElementById('achievementListDiv');
         achievements.createAchievementList(root, response.items, true);
 
+        var prevClick = function(event) {
+          achievements.showAchievementList(response.prevPageToken);
+        };
         if (response.prevPageToken) {
           root.appendChild(
-              achievements.createAchievementPageButton(
-              'Prev',
-              function(event) {
-                            achievements.showAchievementList(
-                                response.prevPageToken);}));
+              utilities.createButton('Prev', undefined, prevClick));
         }
+        var nextClick = function(event) {
+          achievements.showAchievementList(response.nextPageToken);
+        };
         if (response.nextPageToken) {
           root.appendChild(
-              achievements.createAchievementPageButton(
-              'Next',
-              function(event) {
-                            achievements.showAchievementList(
-                                response.nextPageToken);}));
+              utilities.createButton('Next', undefined, nextClick));
         }
       });
 };
@@ -321,15 +263,6 @@ achievements.resetAllAchievements = function() {
 
 
 /**
- * We have to wait for two libraries to load, and then
- * signin to occur before it's safe to show the logged in UI.
- */
-achievements.checkAllUnitsLoaded = function() {
-  // TODO: Activate / deactivate components.
-};
-
-
-/**
  * Initializes the achivements and related games details.
  */
 achievements.initAchievements = function() {
@@ -337,7 +270,6 @@ achievements.initAchievements = function() {
   // grab the player Id and the list of achievements
   gapi.client.games.players.get({playerId: 'me'}).execute(
       function(response) {
-        console.log(response);
         if (response.error) {
           alert('Player get failed: ' + response.error.message);
           return;
@@ -348,7 +280,6 @@ achievements.initAchievements = function() {
 
   gapi.client.games.achievementDefinitions.list({playerId: 'me'}).execute(
       function(response) {
-        console.log(response);
         if (response.error) {
           alert('Definitions get failed: ' + response.error.message);
           return;
