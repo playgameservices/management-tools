@@ -10,7 +10,7 @@ Demonstrates a management interface that lets you:
 * Perform administration on [Leaderboards][leaderboardslink] such as hiding
   players
 * Test and administrate [Events and Quests][eventsquestslink]
-* Inspect [Snapshot data][snapshotlink]
+* Inspect [Snapshot data][snapshotslink]
 
 [achievementslink]: https://developers.google.com/games/services/common/concepts/achievements "Achievements Concepts"
 [eventsquestslink]: https://developers.google.com/games/services/common/concepts/quests "Events and Quests Concepts"
