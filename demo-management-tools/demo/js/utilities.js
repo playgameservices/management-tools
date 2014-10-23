@@ -81,20 +81,20 @@ utilities.createButton = function(text, value, clickHandler) {
  * @return {Object} The generated textarea.
  */
 utilities.createTextArea = function(id, width, height, text) {
-    var textArea = document.createElement('textarea');
-    if (id) {
-      textArea.id = id;
-    }
-    if (width) {
-      textArea.style.width = '600px';
-    }
-    if (height) {
-      textArea.style.height = '800px';
-    }
-    if (text) {
-      textArea.innerText = text;
-    }
-    return textArea;
+  var textArea = document.createElement('textarea');
+  if (id) {
+    textArea.id = id;
+  }
+  if (width) {
+    textArea.style.width = '600px';
+  }
+  if (height) {
+    textArea.style.height = '800px';
+  }
+  if (text) {
+    textArea.innerText = text;
+  }
+  return textArea;
 };
 
 
@@ -140,3 +140,30 @@ utilities.escapeQuotes = function(unescapedString) {
   unescapedString = unescapedString.replace(/\\/g, '\\\\');
   return unescapedString.replace(/"/g, '\\"');
 };
+
+
+/**
+ * Checks an API response for errors and notifies the user.
+ *
+ * @param {Object} resp The API response object.
+ * @param {String} successMessage The message to show on success.
+ */
+utilities.checkApiResponseAndNotify = function(resp, successMessage) {
+  if (!resp) {
+    alert('Error, response was invalid, value is : ' + resp);
+  } else if (resp.error) {
+    alert('Error ' + response.error.code + ': ' + response.error.message);
+  } else {
+    alert(successMessage);
+  }
+};
+
+
+/**
+ * Trims all whitespace from a string.
+ *
+ * @param {String} str The string to replace.
+ */
+utilities.trimWhitespace = function(str) {
+  return str.replace(/ /g, '');
+}

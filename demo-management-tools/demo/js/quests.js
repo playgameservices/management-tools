@@ -17,154 +17,7 @@
 
 var events = events || {};
 var quests = quests || {};
-
-
-/**
- * Updates the list of available events.
- *
- * @param {?string} pageToken The next page token from the previous API call.
- * TODO (class) Move HTML generation into helper / Polymer component.
- */
-events.updateEventsList = function(pageToken) {
-  console.log('Update Events List');
-  gapi.client.games.events.listDefinitions({maxResults: 10, pageToken: pageToken
-  }).execute(
-      function(response) {
-        var root = document.getElementById('eventsBox');
-        root.innerHTML = '';
-        events.createEventsList(root, response.items);
-
-        if (response.prevPageToken) {
-          root.appendChild(
-              utilities.createButton('Prev', response.prevPageToken,
-                  function(event) {
-                    events.updateEventsList(event.target.value);
-                  }));
-        }
-        if (response.nextPageToken) {
-          root.appendChild(
-              utilities.createButton('Next', response.nextPageToken,
-                  function(event) {
-                    events.updateEventsList(event.target.value);
-                  }));
-        }
-      }
-  );
-};
-
-
-/**
- * Creates list of Events.
- *
- * @param {Object} root the element you want to append this to.
- * @param {Array} items the list of achievements
- */
-events.createEventsList = function(root, items) {
-  console.log('Show events');
-  var tab = document.createElement('table');
-  tab.className = 'gridtable';
-  var row, cell;
-
-  // Make the header
-  row = document.createElement('tr');
-  row.style.backgroundColor = colors.accent3;
-  cell = utilities.createCell('th', 'Name', undefined, '#FFF');
-  row.appendChild(cell);
-
-  cell = utilities.createCell('th', 'ID', undefined, '#FFF');
-  row.appendChild(cell);
-
-  cell = utilities.createCell('th', 'Visibility', undefined, '#FFF');
-  row.appendChild(cell);
-
-  cell = utilities.createCell('th', 'Count', undefined, '#FFF');
-  row.appendChild(cell);
-
-  cell = utilities.createCell('th', 'Increment', undefined, '#FFF');
-  row.appendChild(cell);
-
-  tab.appendChild(row);
-
-  // Now actually parse the data.
-  for (var index in items) {
-    item = items[index];
-    row = document.createElement('tr');
-    row.style.backgroundColor = index & 1 ? '#CCC' : '#FFF';
-
-    cell = utilities.createCell('td', item.displayName);
-    row.appendChild(cell);
-
-    var input = utilities.createTextInput(42, item.id, true);
-    cell = utilities.createCell('td', undefined, undefined, undefined,
-        undefined, input);
-    row.appendChild(cell);
-
-    cell = utilities.createCell('td', item.visibility);
-    row.appendChild(cell);
-
-    cell = utilities.createCell('td');
-    cell.id = item.id;
-    row.appendChild(cell);
-
-    cell = utilities.createCell('td');
-    cell.appendChild(
-        utilities.createButton('trigger', item.id,
-            function(event) {
-              events.incrementEvent(event.target.value);
-            }));
-    cell.appendChild(
-        utilities.createButton('pick', item.id,
-            function() {
-              events.setCurrentEventId(event.target.value);
-            }));
-    row.appendChild(cell);
-
-    tab.appendChild(row);
-  }
-
-  root.appendChild(tab);
-};
-
-
-/**
- * Increments an event by a value.
- *
- * @param {string} id The id of the event to increment.
- * @param {int} count The count you want to increment the event.
- */
-events.incrementEvent = function(id, count) {
-  console.log('Incrementing event: ' + id);
-  mockTime = new Date().getTime();
-  gapi.client.games.events.record(
-      {
-        'kind': 'games#eventRecordRequest',
-        'requestId': mockTime,
-        'currentTimeMillis': mockTime,
-        'timePeriods': [
-          {
-            'kind': 'games#eventPeriodUpdate',
-            'timePeriod': {
-              'kind': 'games#eventPeriodRange',
-              'periodStartMillis': mockTime - 100000,
-              'periodEndMillis': mockTime - 100
-            },
-            'updates': [
-              {
-                'kind': 'games#eventUpdateRequest',
-                'definitionId': id,
-                'updateCount': 1
-              }
-            ]
-          }
-        ]
-      }).execute(function(resp) {
-    var events = resp.playerEvents;
-    for (var i = 0; i < events.length; i++) {
-      document.getElementById(events[i].definitionId).innerText =
-          events[i].formattedNumEvents;
-    }
-  });
-};
+var utilities = utilities || {};
 
 
 /**
@@ -215,14 +68,26 @@ quests.createQuestsList = function(root, questList) {
     title.innerText = quest.name + ' - ' + quest.description;
     root.appendChild(title);
 
+    root.appendChild(document.createElement('p'));
+
+    var idText = document.createElement('textarea');
+    idText.className = 'questIdArea';
+    idText.value = 'Quest ID: ' + quest.id;
+    root.appendChild(idText);
+
     root.appendChild(utilities.createButton('Accept', quest.id,
-          function(evt) {
-            quests.acceptQuest(evt.target.value);
-          }));
+        function(evt) {
+          quests.acceptQuest(evt.target.value);
+        }));
 
     root.appendChild(utilities.createButton('Reset', quest.id,
         function(evt) {
           quests.resetQuest(evt.target.value);
+        }));
+
+    root.appendChild(utilities.createButton('Reset for All', quest.id,
+        function(evt) {
+          quests.resetQuestForAll(evt.target.value);
         }));
 
     var tab = document.createElement('table');
@@ -231,7 +96,7 @@ quests.createQuestsList = function(root, questList) {
 
     // Make the header
     row = document.createElement('tr');
-    row.style.backgroundColor = colors.accent3;
+    row.style.backgroundColor = colors.accent4;
     cell = utilities.createCell('th', 'MilestoneId', undefined, '#FFF');
     row.appendChild(cell);
     cell = utilities.createCell('th', 'Criteria', undefined, '#FFF');
@@ -251,7 +116,7 @@ quests.createQuestsList = function(root, questList) {
 
       // Add inner table header.
       var innerRow = document.createElement('tr');
-      innerRow.style.backgroundColor = colors.accent3;
+      innerRow.style.backgroundColor = colors.accent4;
       innerRow.style.color = '#FFF';
       var innerCel = utilities.createCell('th', 'Event');
       innerRow.appendChild(innerCel);
@@ -271,7 +136,7 @@ quests.createQuestsList = function(root, questList) {
         var initPlayerProgress = criteria[j].initialPlayerProgress ?
             criteria[j].initialPlayerProgress.formattedValue : 'n/a';
         var completionString = currContribution + ' / ' + complContribution +
-                  ' [' + initPlayerProgress + ']';
+            ' [' + initPlayerProgress + ']';
 
         innerRow = document.createElement('tr');
 
@@ -342,7 +207,7 @@ events.setCurrentEventId = function(id) {
 
 
 /**
- * Resets the currently populated event for the current user.
+ * Resets the specified quest for the current user.
  *
  * @param {string} questId The identifier for the quest to reset.
  */
@@ -351,44 +216,67 @@ quests.resetQuest = function(questId) {
       function(resp) {
         console.log('A quest was reset.');
         console.log(resp);
+        utilities.checkApiResponseAndNotify(resp, 'Quest reset.');
       });
 };
 
 
 /**
- * Resets the currently populated event for the current user.
+ * Resets all quests for the current user.
  */
-events.resetCurrentEvent = function() {
-  var eventId = events.getCurrentEventId();
-  gapi.client.gamesManagement.events.reset({eventId: eventId}).execute(
+quests.resetAllMyQuests = function() {
+  gapi.client.gamesManagement.quests.resetAll().execute(
       function(resp) {
-        console.log('Current Event Reset');
+        console.log('Reset the current player\'s quests.');
         console.log(resp);
+        utilities.checkApiResponseAndNotify(resp,
+            'All quests reset for current player.');
       });
 };
 
 
 /**
- * Resets all events for the currently authenticated user.
+ * Resets the specified quest for all players.
+ *
+ * @param {string} questId The identifier for the quest to reset.
  */
-events.resetAllEventsForMe = function() {
-  console.log('Resetting all events for the current user.');
-  gapi.client.gamesManagement.events.resetAll().execute(function(resp) {
-    console.log('Events reset, response:');
+quests.resetQuestForAll = function(questId) {
+  gapi.client.gamesManagement.quests.resetForAllPlayers({questId: questId}).
+      execute(
+      function(resp) {
+        console.log('Quest was reset for all players.');
+        console.log(resp);
+        utilities.checkApiResponseAndNotify(resp,
+            'Quest reset for all players.');
+      });
+};
+
+
+/**
+ * Resets the quests specified in the current quest IDs field.
+ */
+quests.resetCurrentMultiple = function() {
+  var questsList = utilities.trimWhitespace(
+          document.getElementById('quest-ids').value).split(',');
+  gapi.client.gamesManagement.quests.resetMultipleForAllPlayers(
+      {quest_ids: questsList}).execute(function(resp) {
+    console.log('Multiple Quests reset for all players');
     console.log(resp);
+    utilities.checkApiResponseAndNotify(resp, 'Multiple quests reset.');
   });
 };
 
 
 /**
- * Resets the currently populated event for all users.
+ * Resets all quests for all players.
  */
-events.resetCurrentEventForAll = function() {
-  console.log('Resetting current event for everybody.');
-  var eventId = events.getCurrentEventId();
-  gapi.client.gamesManagement.events.resetForAllPlayers({eventId: eventId}).
-      execute(function(resp) {
-        console.log('Events reset, response:');
+quests.resetAllForAll = function() {
+  gapi.client.gamesManagement.quests.resetAllForAllPlayers().execute(
+      function(resp) {
+        console.log('All quests were reset.');
         console.log(resp);
+        utilities.checkApiResponseAndNotify(resp, 'All quests were reset');
       });
 };
+
+
