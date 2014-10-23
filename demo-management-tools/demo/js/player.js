@@ -16,6 +16,7 @@
 
 
 var player = player || {};
+var utilities = utilities || {};
 
 
 /**
@@ -217,15 +218,8 @@ player.hidePlayer = function() {
       {applicationId: APP_ID,
         playerId: id}).execute(function(response) {
     console.log('Player hide:', response);
-    if (response.error != null) {
-      alert('There was an error hiding that player: ' +
-          response.error.code + ': ' + response.error.message);
-    }
-    else
-    {
-      alert('Player is hidden! It may be a few seconds ' +
-          'for this to propagate.');
-    }
+    utilities.checkApiResponseAndNotify(response,
+        'Player is hidden! It may be a few seconds for this to propagate.');
   });
 };
 
@@ -245,7 +239,6 @@ player.unhidePlayer = function() {
     console.log('Player hide:', response);
     console.log('Player hide:', JSON.stringify(response));
     if (response.error != null) {
-
       if (response.error.code == '404') {
         alert('You got a 404.  That might mean that ' +
             ' player is already unhidden.');

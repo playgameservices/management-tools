@@ -16,6 +16,7 @@
 
 
 var achievements = achievements || {};
+var utilities = utilities || {};
 
 
 /**
@@ -93,7 +94,7 @@ achievements.createAchievementList = function(root, items) {
     // Need an active button
     cell = utilities.createCell('td');
     var button = utilities.createButton('Pick me!', item.id,
-          achievements.sendAchievementDataToInputs);
+        achievements.sendAchievementDataToInputs);
     cell.appendChild(button);
     row.appendChild(cell);
 
@@ -234,13 +235,26 @@ achievements.resetAchievement = function() {
         achievementId: achievementId}).execute(
       function(response) {
         console.log('Response', response);
-        if (response.error) {
-          alert('Error ' + response.error.code +
-              ': ' + response.error.message);
-          return;
-        }
-        alert('Achievment reset!  Refresh to see the difference.');
+        utilities.checkApiResponseAndNotify(response,
+            'Achievment reset!  Refresh to see the difference.');
       });
+};
+
+
+/**
+ * Resets the specified achievement for all players.
+ */
+achievements.resetAchievementForAll = function() {
+  var achievementId = document.getElementById('resetAchievementInput').value;
+  console.log('Resetting ' + achievementId + ' for all players.');
+
+  gapi.client.gamesManagement.achievements.resetForAllPlayers(
+      {achievementId: achievementId}).execute(
+        function(resp) {
+          console.log(resp);
+          utilities.checkApiResponseAndNotify(resp,
+              'Achievment reset for all players.');
+        });
 };
 
 
@@ -251,14 +265,38 @@ achievements.resetAllAchievements = function() {
   gapi.client.gamesManagement.achievements.resetAll(
       {playerId: PLAYER_ID}).execute(
       function(response) {
-        console.log('Response', response);
-        if (response.error) {
-          alert('Error ' + response.error.code +
-              ': ' + response.error.message);
-          return;
-        }
-        alert('All achievements reset!');
+        console.log('Response from reset all achievements', response);
+        utilities.checkApiResponseAndNotify(response,
+            'All achievements reset!');
       });
+};
+
+
+/**
+ * Resets all achievements for all test accounts.
+ */
+achievements.resetAllForAll = function() {
+  gapi.client.gamesManagement.achievements.resetAllForAllPlayers().execute(
+      function(response) {
+        console.log('Response from reset all achievements', response);
+        utilities.checkApiResponseAndNotify(response,
+            'All achievements reset!');
+      });
+};
+
+
+/**
+ * Resets the quests specified in the current quest IDs field.
+ */
+achievements.resetCurrentMultiple = function() {
+  var achievementList = utilities.trimWhitespace(
+      document.getElementById('ach-ids').value).split(',');
+
+  gapi.client.gamesManagement.achievements.resetMultipleForAllPlayers(
+      {achievement_ids: achievementList}).execute(function(resp) {
+    console.log(resp);
+    utilities.checkApiResponseAndNotify(resp, 'Multiple achievements reset.');
+  });
 };
 
 

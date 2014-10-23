@@ -143,6 +143,14 @@ core-pages.mainPages > div:nth-child(3) {
 }
 
 core-pages.mainPages > div:nth-child(4) {
+  background-color: #d23f31;
+}
+
+core-pages.mainPages > div:nth-child(5) {
+  background-color: #f9b24f;
+}
+
+core-pages.mainPages > div:nth-child(6) {
   background-color: #3e50b4;
 }
 
@@ -186,8 +194,23 @@ core-pages.mainPages div.begin {
   color: #fff;
 }
 
-.eqButton {
+.eventsButton {
   background: #9F499B;
+  color: #fff;
+}
+
+.questsButton {
+  background: #d23f31;
+  color: #fff;
+}
+
+.questIdArea {
+  height: 13px;
+  width: 200px;
+}
+
+.mpButton {
+  background: #f9b24f;
   color: #fff;
 }
 

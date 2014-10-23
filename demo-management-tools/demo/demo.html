@@ -7,8 +7,10 @@
     <!-- Supporting Scripts -->
     <script src="js/achievements.js"></script>
     <script src="js/constants.js"></script>
-    <script src="js/eventsquests.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/quests.js"></script>
     <script src="js/leaderboards.js"></script>
+    <script src="js/multiplayer.js"></script>
     <script src="js/player.js"></script>
     <script src="js/snapshots.js"></script>
     <script src="js/utilities.js"></script>
@@ -78,7 +80,9 @@
         <paper-tabs selected="0" flex style="max-width: 600px;">
           <paper-tab>Achievements</paper-tab>
           <paper-tab>Leaderboards</paper-tab>
-          <paper-tab>Events/Quests</paper-tab>
+          <paper-tab>Events</paper-tab>
+          <paper-tab>Quests</paper-tab>
+          <paper-tab>Multiplayer</paper-tab>
           <paper-tab>Snapshots</paper-tab>
         </paper-tabs>
       </div>
@@ -107,8 +111,8 @@
               </div>
               <p>
               <div horizontal layout class="miniForm">
-                <div>
-                  <div horizontal layout>
+                <div flex>
+                  <div>
                     <div><b>Unlock</b> this achievement for me:
                     <p>
                     <paper-input id="unlockAchievementInput"
@@ -120,6 +124,21 @@
                 <div style="padding-top: 10px;">
                   <paper-button raisedButton class="achieveButton"
                       onClick="achievements.unlockAchievement()" label="Unlock">
+                  </paper-button>
+                </div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <paper-input id="ach-ids"
+                     style="width:500px;"
+                     label="Comma-separated achievement ids">
+                  </paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton class="achieveButton"
+                      label="Reset multiple achievements"
+                      onClick="achievements.resetCurrentMultiple()">
                   </paper-button>
                 </div>
               </div>
@@ -153,6 +172,8 @@
                 <div style="padding-top: 10px;">
                   <paper-button raisedButton onClick="achievements.resetAchievement()"
                       class="achieveButton" label="reset"></paper-button>
+                  <paper-button raisedButton onClick="achievements.resetAchievementForAll()"
+                      class="achieveButton" label="reset for all"></paper-button>
                 </div>
               </div>
               <p>
@@ -165,6 +186,18 @@
                 <div>
                   <paper-button raisedButton
                       onClick="achievements.resetAllAchievements()"
+                      class="achieveButton" label="Reset All"></paper-button>
+                </div>
+              </div>
+              <div horizontal layout class="miniForm"
+                  style="padding-top: 10px; padding-bottom: 10px;">
+                <div flex>
+                  <span><b>Reset all achievements</b> for everybody:</span>
+                </div>
+                  <p>
+                <div>
+                  <paper-button raisedButton
+                      onClick="achievements.resetAllForAll()"
                       class="achieveButton" label="Reset All"></paper-button>
                 </div>
               </div>
@@ -205,6 +238,14 @@
                        label="Refresh high scores"
                        onClick="player.showHighScoreList(null)">
                     </paper-button>
+                      <paper-button raisedButton class="leaderButton"
+                          label="Reset all my scores"
+                          onClick="leaderboards.resetMyScores()">
+                      </paper-button>
+                      <paper-button raisedButton class="leaderButton"
+                          label="Reset all scores"
+                          onClick="leaderboards.resetMultipleForAllPlayers()">
+                      </paper-button>
                   </div>
                 </div>
                 <div id="highScoreListDiv"></div>
@@ -218,6 +259,21 @@
                   </div>
                 </div>
                 <div id="hiddenPlayersDiv"></div>
+              </div>
+              <p>
+              <div horizontal layout class="miniForm">
+                <div flex>
+                  <paper-input id="multiLeaderboard"
+                     style="width:500px;"
+                     label="Comma-separated learderboard ids">
+                  </paper-input>
+                </div>
+                <div style="padding-top: 10px;">
+                  <paper-button raisedButton class="leaderButton"
+                      label="Reset multiple leaderboards"
+                      onClick="leaderboards.resetMultipleForAllPlayers()">
+                  </paper-button>
+                </div>
               </div>
               <p>
               <div horizontal layout class="miniForm">
@@ -272,6 +328,9 @@
                   <paper-button raisedButton class="leaderButton"
                       onClick="leaderboards.resetLeaderboard()" label="Reset">
                   </paper-button>
+                  <paper-button raisedButton class="leaderButton"
+                      onClick="leaderboards.resetLeaderboard()" label="Reset for All">
+                  </paper-button>
                 </div>
               </div>
               <p>Remove access to this app by going to:
@@ -281,31 +340,20 @@
           </div>
         </div>
 
-        <div id='eventsQuests'>
+        <div id='events'>
           <div vertical layout style="margin-bottom: auto">
             <div>
-            <h2 class="pageHeading">Events and Quests Management</h2>
+            <h2 class="pageHeading">Events Management</h2>
             </div>
             <div class="mainContent">
               <div vertical layout class="miniForm">
                 <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
                   <div id="eventsBox" flex></div>
                   <div style="text-align:right;">
-                    <paper-button raisedButton class="eqButton"
+                    <paper-button raisedButton class="eventsButton"
                        onClick="events.updateEventsList()"
                        label="Refresh Events" ></paper-button>
                     <p>
-                  </div>
-                </div>
-              </div>
-              <p>
-              <div vertical layout class="miniForm">
-                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
-                  <div id="questsBox" flex></div>
-                  <div>
-                    <paper-button raisedButton class="eqButton"
-                       onClick="quests.updateQuestsList()"
-                       label="Refresh Quests" ></paper-button>
                   </div>
                 </div>
               </div>
@@ -319,22 +367,124 @@
                   </div>
                   <div style="text-align:right;">
                     <p>
-                    <paper-button raisedButton class="eqButton"
+                    <paper-button raisedButton class="eventsButton"
                        onClick="events.resetCurrentEvent()"
                        label="Reset event for me" ></paper-button>
                     <p>
-                    <paper-button raisedButton class="eqButton"
+                    <paper-button raisedButton class="eventsButton"
                        onClick="events.resetAllEventsForMe()"
                        label="Reset all my events" ></paper-button>
                     <p>
-                    <paper-button raisedButton class="eqButton"
+                    <paper-button raisedButton class="eventsButton"
                        onClick="events.resetCurrentEventForAll()"
                        label="Reset Event for All Players" ></paper-button>
+                    <p>
+                    <paper-button raisedButton class="eventsButton"
+                       onClick="events.resetAllForAll()"
+                       label="Reset All Events For All Players" ></paper-button>
+                  </div>
+                </div>
+              </div>
+              <p>
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div flex>
+                    <paper-input label="Comma-separated Event IDs"
+                        id="event-ids" style="width:500px">
+                  </div>
+                  <div style="text-align:right;">
+                    <paper-button raisedButton class="eventsButton"
+                       onClick="events.resetCurrentMultipleForAll()"
+                       label="Reset Multiple Events" ></paper-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id='quests'>
+          <div vertical layout style="margin-bottom: auto">
+            <div>
+            <h2 class="pageHeading">Quests Management</h2>
+            </div>
+            <div class="mainContent">
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div id="questsBox" style="color:black;" flex></div>
+                  <div style="text-align:right;">
+                    <paper-button raisedButton class="questsButton"
+                       onClick="quests.updateQuestsList()"
+                       label="Refresh Quests" ></paper-button>
+                    <p>
+                    <paper-button raisedButton class="questsButton"
+                       onClick="quests.resetAllMyQuests()"
+                       label="Reset all my Quests" ></paper-button>
+                    <p>
+                    <paper-button raisedButton class="questsButton"
+                       onClick="quests.resetAllForAll()"
+                       label="Reset all Quests for all Players" ></paper-button>
+                  </div>
+                </div>
+              </div>
+              <p>
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div flex>
+                    <paper-input label="Comma-separated Quest IDs"
+                        id="quest-ids" style="width:500px">
+                  </div>
+                  <div style="text-align:right;">
+                    <paper-button raisedButton class="questsButton"
+                       onClick="quests.resetCurrentMultiple()"
+                       label="Reset Multiple Quests" ></paper-button>
                   </div>
                 </div>
               </div>
               <ul>
               </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id='multiplayer'>
+          <div vertical layout style="margin-bottom: auto">
+            <div>
+            <h2 class="pageHeading">Multiplayer Management</h2>
+            </div>
+            <div class="mainContent">
+              <!-- Rooms -->
+              <div vertical layout class="miniForm">
+                <div horizontal layout style="padding-top: 5px; padding-bottom: 5px;">
+                  <div flex style="text-align:left;">
+                    <p>Click the following button to reset your Real-time
+                        rooms:<br>
+                    <paper-button raisedButton class="mpButton"
+                       onClick="multiplayer.resetMyRealtimeRooms()"
+                       label="Reset My Real-time Rooms" ></paper-button>
+                    <hr>
+                    <p>Click the following button to reset Real-time rooms for
+                        all players:<br>
+                    <paper-button raisedButton class="mpButton"
+                       onClick="multiplayer.resetAllRealtimeRooms()"
+                       label="Reset All Real-time Rooms" ></paper-button>
+                    <hr>
+                    <p>Click the following button to reset your Turn-based
+                        Rooms:<br>
+                    <paper-button raisedButton class="mpButton"
+                       onClick="multiplayer.resetMyTurnbasedRooms()"
+                       label="Reset My Turn-Based Rooms" ></paper-button>
+                    <hr>
+                    <p>Click the following button to reset Turn-based Rooms for
+                        all players:<br>
+                    <paper-button raisedButton class="mpButton"
+                       onClick="multiplayer.resetAllTurnbasedRooms()"
+                       label="Reset All Turn-Based Rooms" ></paper-button>
+                  </div>
+                </div>
+              </div>
+              <p>
+              <!-- TurnBased -->
             </div>
           </div>
         </div>
@@ -393,10 +543,12 @@
     var tabs = document.querySelector('paper-tabs');
 
     var colors = {
-      accent1: '#00bcd4',
-      accent2: '#e81d62',
-      accent3: '#9f499b',
-      accent4: '#3e50b4'
+      accent1: '#00bcd4', // achievements
+      accent2: '#e81d62', // leaderboards
+      accent3: '#9f499b', // events
+      accent4: '#d23f31', // quests
+      accent5: '#f9b24f', // multiplayer
+      accent6: '#3e50b4'  // snapshots
     };
 
     tabs.addEventListener('core-select', function() {
@@ -408,8 +560,10 @@
       var pageIds = [
         {selectorId: 0, idString: '#achievements', color: colors.accent1},
         {selectorId: 1, idString: '#leaderboard', color: colors.accent2},
-        {selectorId: 2, idString: '#eventsQuests', color: colors.accent3},
-        {selectorId: 3, idString: '#snapshots', color: colors.accent4}
+        {selectorId: 2, idString: '#events', color: colors.accent3},
+        {selectorId: 3, idString: '#quests', color: colors.accent4},
+        {selectorId: 4, idString: '#multiplayer', color: colors.accent5},
+        {selectorId: 5, idString: '#snapshots', color: colors.accent6}
       ];
 
       for (var i = 0; i < pageIds.length; i++) {

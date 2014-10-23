@@ -45,9 +45,9 @@ snapshots.updateSnapshotList = function() {
       currSnapshotIds = [];
       for (var i = 0; i < resp.items.length; i++) {
         formElement.appendChild(
-          snapshots.generateSnapshotRadio(resp.items[i].id,
-              resp.items[i].description, resp.items[i].coverImage,
-              (i < (resp.items.length - 1))));
+            snapshots.generateSnapshotRadio(resp.items[i].id,
+                resp.items[i].description, resp.items[i].coverImage,
+                (i < (resp.items.length - 1))));
       }
     }
     root.appendChild(formElement);

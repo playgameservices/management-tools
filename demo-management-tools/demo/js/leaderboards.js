@@ -15,7 +15,8 @@
 
 
 
-var leaderboards = {};
+var leaderboards = leaderboards || {};
+var utilities = utilities || {};
 
 
 /** Creates list of leaderboards with buttons to get scores
@@ -220,6 +221,54 @@ leaderboards.showLeaderboardList = function(pageToken) {
 
 
 /**
+ * Resets my scores on all leaderboards.
+ */
+leaderboards.resetMyScores = function() {
+  gapi.client.gamesManagement.scores.resetAll().execute(
+      function(response) {
+        console.log('reset all scores: ', response);
+        utilities.checkApiResponseAndNotify(response,
+            'All scores reset!  Get your scores again to see the effect.');
+      });
+
+};
+
+
+/**
+ * Resets all scores on all leaderboards for whitelisted users.
+ */
+leaderboards.resetAllForAllPlayers = function() {
+  gapi.client.gamesManagement.scores.resetAllForAllPlayers().execute(
+      function(response, raw) {
+        console.log('reset all scores: ', response);
+        console.log('reset raw all scores: ', raw);
+        utilities.checkApiResponseAndNotify(resp,
+            'All scores for all players reset! Get your scores again to see ' +
+            'the effect.');
+      });
+};
+
+
+/**
+ * Resets all scores on all leaderboards for whitelisted users.
+ */
+leaderboards.resetMultipleForAllPlayers = function() {
+  var leaderboard_ids = utilities.trimWhitespace(
+          document.getElementById('multiLeaderboard').value).split(',');
+  console.log(leaderboard_ids);
+  gapi.client.gamesManagement.scores.resetMultipleForAllPlayers(
+    {leaderboard_ids: leaderboard_ids}).execute(
+      function(response, raw) {
+        console.log('reset all scores: ', response);
+        console.log('reset raw all scores: ', raw);
+        utilities.checkApiResponseAndNotify(response,
+            'All scores for all players reset! Get your scores again to see ' +
+            'the effect.');
+      });
+};
+
+
+/**
  * Load the current set of scores.  No paging token, since you
  * can at most get three scores back (ALL_TIME, WEEKLY, DAILY)
  *
@@ -311,14 +360,26 @@ leaderboards.resetLeaderboard = function() {
       {leaderboardId: id}).execute(
       function(response) {
         console.log('leaderboard reset:', response);
-        if (response.error != null) {
-          alert('Error resetting leaderboard: ' +
-              response.error.code + ': ' + response.error.message);
-        }
-        else
-        {
-          alert('Leaderboard reset!  Get your scores again ' +
-              'to see the effect.');
-        }
+        utilities.checkApiResponseAndNotify(response,
+            'Leaderboard reset! Get your scores again to see the effect.');
+      });
+};
+
+
+/**
+ * Resets all scores for all players on a leaderboard.
+ */
+leaderboards.resetLeaderboardForAll = function() {
+  var id = document.getElementById('leaderboardResetIdInput').value;
+  if (id == '') {
+    alert('You need to enter a valid leaderboard id.');
+    return;
+  }
+  gapi.client.gamesManagement.scores.resetForAllPlayers(
+      {leaderboardId: id}).execute(
+      function(response) {
+        console.log('leaderboard reset:', response);
+        utilities.checkApiResponseAndNotify(response,
+            'Leaderboard reset! Get your scores again to see the effect.');
       });
 };
