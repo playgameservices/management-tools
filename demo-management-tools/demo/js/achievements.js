@@ -294,7 +294,7 @@ achievements.resetCurrentMultiple = function() {
 
   gapi.client.gamesManagement.achievements.resetMultipleForAllPlayers(
       {achievement_ids: achievementList}).execute(function(resp) {
-    console.log(resp);
+    console.log('Resopnse from reset curr multiple', resp);
     utilities.checkApiResponseAndNotify(resp, 'Multiple achievements reset.');
   });
 };
