@@ -184,9 +184,9 @@ achievements.unlockAchievement = function() {
           return;
         }
         if (response.newlyUnlocked) {
-          alert('Achievment unlocked!  Refresh to see the difference.');
+          alert('Achievement unlocked!  Refresh to see the difference.');
         } else {
-          alert('Achievment unlocked!  However, it was always unlocked.');
+          alert('Achievement unlocked!  However, it was always unlocked.');
         }
       });
 };
@@ -214,9 +214,9 @@ achievements.incrementAchievement = function() {
           return;
         }
         if (response.newlyUnlocked) {
-          alert('Achievment unlocked!  Refresh to see the difference.');
+          alert('Achievement unlocked!  Refresh to see the difference.');
         } else {
-          alert('Achievment incremented!');
+          alert('Achievement incremented!');
         }
       });
 };
@@ -236,7 +236,7 @@ achievements.resetAchievement = function() {
       function(response) {
         console.log('Response', response);
         utilities.checkApiResponseAndNotify(response,
-            'Achievment reset!  Refresh to see the difference.');
+            'Achievement reset!  Refresh to see the difference.');
       });
 };
 
@@ -253,7 +253,7 @@ achievements.resetAchievementForAll = function() {
         function(resp) {
           console.log(resp);
           utilities.checkApiResponseAndNotify(resp,
-              'Achievment reset for all players.');
+              'Achievement reset for all players.');
         });
 };
 
