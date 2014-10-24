@@ -19,8 +19,7 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "polymer#~0.3.6",
-    "paper-elements": "Polymer/paper-elements#~0.3.4",
-    "core-ajax": "Polymer/core-ajax#~0.3.4"
+    "paper-elements": "Polymer/paper-elements#~0.4.2",
+    "core-ajax": "Polymer/core-ajax#~0.4.2"
   }
 }
