@@ -39,7 +39,6 @@ $ python games-config.py --logging_level=DEBUG
 import argparse
 import csv
 import httplib
-import json
 import logging
 import random
 import sys
