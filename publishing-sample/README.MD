@@ -13,7 +13,7 @@ by the API.
 ## Prerequisites
 To run this sample you need:
 * Python version 2.7+.
-* Google Client API.
+* Google API Client.
   In to install this run:
     `pip install --upgrade google-api-python-client`
 
