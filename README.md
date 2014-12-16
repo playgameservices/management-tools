@@ -1,6 +1,6 @@
 # Play Games Services Managment Tools #
 
-In this repository you can find tools to help you publish, manage and test your Play
+In this repository you can find tools to help you publish, manage, and test your Play
 Games services apps.
 
 ## demo-management-tools ##
