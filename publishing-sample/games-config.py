@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Command line sample for configuring play-games.
+"""Command line sample for publishing play game service objects.
 
 Configuring web based authentication refer to:
 https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
@@ -85,7 +85,7 @@ RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
 
 
 def main(argv):
-  """Main program for demonstrating the play games configuration API.
+  """Main program for demonstrating the play game service publishing API.
 
   Args:
     argv: command line arguments
