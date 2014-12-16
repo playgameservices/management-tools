@@ -531,7 +531,6 @@ class AchievementConfig(Configurable):
 
     rows = []
     if 'items' in rsp:
-      pprint.pprint(rsp['items'])
       for item in rsp['items']:
         rows += self._make_locale_rows(self.flatten(item))
 
