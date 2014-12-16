@@ -56,8 +56,6 @@ from oauth2client.file import Storage
 from oauth2client.tools import run_flow
 import writer
 
-import pprint
-
 # OAUTH2 client information.  This file can be downloaded
 #  from the play games console.
 # It is not needed if you are using a service account.
