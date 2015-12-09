@@ -1,4 +1,4 @@
-# Play Games Services Managment Tools #
+# Play Games Services Management Tools #
 
 In this repository you can find tools to help you publish, manage, and test your Play
 Games services apps.
