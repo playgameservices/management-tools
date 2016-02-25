@@ -180,8 +180,8 @@ core-pages.mainPages div.begin {
   min-height: 400px;
   min-width: 300px;
   margin: 15px 10px 10px 10px;
-  padding: 5px 5px 5px 5px
-      border-radius: 5px;
+  padding: 5px 5px 5px 5px;
+  border-radius: 5px;
 }
 
 .achieveButton {
