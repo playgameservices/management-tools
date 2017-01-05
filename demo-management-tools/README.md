@@ -31,8 +31,8 @@ First, create a client ID for Web applications from the [Google Play Developer
 Console](https://play.google.com/apps/publish) within the project that you
 want to manage.
 
-Replace `YOUR_CLIENT_ID` in demo.html with your app's client ID and also replace
-`YOUR_APP_ID` in `js/constants.js` with the app ID for your Games Services ID
+Replace `REPLACE_CLIENT_ID` in demo.html with your app's client ID and also replace
+`REPLACE_APP_ID` in `js/constants.js` with the app ID for your Games Services ID
 from the Google Play Developer Console.
 
 ## Using the sample ##
